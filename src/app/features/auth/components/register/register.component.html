@@ -1,1 +1,150 @@
-<p>register works!</p>
+<div class="container">
+  <form class="form">
+  <h1>Registro</h1>
+
+  <!-- NOMBRE Y APELLIDO -->
+  <table class="full-width" cellspacing="0">
+    <tr>
+      <td>
+        <mat-form-field class="full-width">
+          <mat-label>Nombre</mat-label>
+          <input matInput [formControl]="nombreFormControl">
+
+          <mat-error *ngIf="nombreFormControl.hasError('minlength') && !nombreFormControl.hasError('required')">
+            Mínimo 5 caracteres
+          </mat-error>
+
+          <mat-error *ngIf="nombreFormControl.hasError('required')">
+            Nombre es <strong>requerido</strong>
+          </mat-error>
+        </mat-form-field>
+      </td>
+    <td>
+      <mat-form-field class="full-width">
+        <mat-label>Apellido</mat-label>
+        <input matInput [formControl]="apellidoFormControl">
+
+        <mat-error *ngIf="apellidoFormControl.hasError('minlength')  && !apellidoFormControl.hasError('required')">
+          Mínimo 5 caracteres
+        </mat-error>
+
+        <mat-error *ngIf="apellidoFormControl.hasError('required')">
+          Apellido es <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+    </td>
+    </tr>
+  </table>
+
+  <!-- DNI -->
+   <mat-form-field class="full-width">
+      <mat-label>DNI</mat-label>
+      <input matInput [formControl]="dniFormControl"
+         placeholder="Ex. 12345678">
+
+      <mat-error *ngIf="(dniFormControl.hasError('minlength') || dniFormControl.hasError('maxlength')) && !dniFormControl.hasError('required')">
+          Entre 7 y 8 caracteres
+      </mat-error>
+
+      <mat-error *ngIf="dniFormControl.hasError('required')">
+        DNI es <strong>requerido</strong>
+      </mat-error>
+  </mat-form-field>
+
+  <br>
+
+  <!-- EMAIL -->
+  <mat-form-field class="full-width">
+    <mat-label>Email</mat-label>
+    <input type="email" matInput [formControl]="emailFormControl" [errorStateMatcher]="matcher"
+           placeholder="Ex. pat@example.com">
+    <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+      Please enter a valid email address
+    </mat-error>
+    <mat-error *ngIf="emailFormControl.hasError('required')">
+      Email is <strong>required</strong>
+    </mat-error>
+  </mat-form-field>
+
+  <!-- CONTRASEÑA -->
+   <table class="full-width" cellspacing="0">
+    <tr>
+      <td>
+        <mat-form-field class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input type="password" matInput [formControl]="passFormControl">
+
+          <mat-error *ngIf="passFormControl.hasError('minlength') && !passFormControl.hasError('required')">
+            Mínimo 8 caracteres
+          </mat-error>
+
+          <mat-error *ngIf="passFormControl.hasError('required')">
+            Contraseña es <strong>requerida</strong>
+          </mat-error>
+        </mat-form-field>
+      </td>
+    <td>
+      <mat-form-field class="full-width">
+        <mat-label>Repetir contraseña</mat-label>
+        <input type="password" matInput [formControl]="rePassFormControl">
+
+        <mat-error *ngIf="rePassFormControl.hasError('minlength')  && !rePassFormControl.hasError('required')">
+          Mínimo 8 caracteres
+        </mat-error>
+
+        <mat-error *ngIf="rePassFormControl.hasError('required')">
+          Contraseña es <strong>requerida</strong>
+        </mat-error>
+      </mat-form-field>
+    </td>
+    </tr>
+  </table>
+
+  <!-- TIPO DE USUARIO -->
+  <mat-form-field class="full-width">
+    <mat-label>Tipo de usuario</mat-label>
+    <input matInput disabled value="Paciente">
+  </mat-form-field>
+
+  <br>
+
+  <!-- FECHA NACIMIENTO -->
+  <mat-form-field class="full-width">
+    <mat-label>Fecha nacimiento</mat-label>
+      <input matInput [matDatepicker]="picker" [formControl]="dateFormControl"
+      placeholder="MM/DD/YYYY">
+      <mat-datepicker-toggle matIconSuffix [for]="picker">
+        <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+      </mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+
+      <mat-error *ngIf="dateFormControl.hasError('required')">
+          Fecha nacimiento es <strong>requerida</strong>
+      </mat-error>
+  </mat-form-field>
+
+  <br>
+
+  <!-- COBERTURA -->
+  <mat-form-field class="full-width">
+    <mat-label>Cobertura</mat-label>
+      <mat-select [formControl]="selectFormControl">
+        <mat-option *ngFor="let food of foods" [value]="food.value">
+          {{food.viewValue}}
+        </mat-option>
+    </mat-select>
+
+    <mat-error *ngIf="selectFormControl.hasError('required')">
+          Cobertura es <strong>requerida</strong>
+    </mat-error>
+  </mat-form-field>
+  
+  <div class="form-actions">
+    <button mat-raised-button>Registrarse</button>
+
+  <br>
+
+  <button mat-button color="warn">Volver</button>
+  </div>
+</form>
+</div>
