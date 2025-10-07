@@ -1,15 +1,19 @@
 <div class="container">
-  <form class="form">
+  <form class="form" [formGroup]="loginForm">
     <h1>Iniciar sesión</h1>
 
     <!-- DNI -->
     <mat-form-field class="full-width">
         <mat-label>DNI</mat-label>
         <input matInput [formControl]="dniFormControl"
-         placeholder="Ex. 12345678">
+         placeholder="Ex. 12345678" [errorStateMatcher]="matcher">
 
         <mat-error *ngIf="(dniFormControl.hasError('minlength') || dniFormControl.hasError('maxlength')) && !dniFormControl.hasError('required')">
           Entre 7 y 8 caracteres
+        </mat-error>
+
+        <mat-error *ngIf="dniFormControl.hasError('pattern')">
+          Solo se permiten caracteres numéricos.
         </mat-error>
 
         <mat-error *ngIf="dniFormControl.hasError('required')">
@@ -22,7 +26,8 @@
     <!-- CONTRASEÑA -->
     <mat-form-field class="full-width">
           <mat-label>Contraseña</mat-label>
-          <input type="password" matInput [formControl]="passFormControl">
+          <input type="password" matInput [formControl]="passFormControl"
+            [errorStateMatcher]="matcher">
 
           <mat-error *ngIf="passFormControl.hasError('minlength') && !passFormControl.hasError('required')">
             Mínimo 8 caracteres
@@ -34,7 +39,7 @@
         </mat-form-field>
 
         <div class="form-actions">
-            <button mat-raised-button>Iniciar sesión</button>
+            <button mat-raised-button (click)="iniciarSesion()">Iniciar sesión</button>
             <button mat-button color="warn">Registrarse</button>
         </div>
   </form>
