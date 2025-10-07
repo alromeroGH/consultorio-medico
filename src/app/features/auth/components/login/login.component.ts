@@ -1,21 +1,18 @@
 import { Component } from '@angular/core';
 import {
   FormControl,
+  FormGroup,
   FormGroupDirective,
   NgForm,
   Validators,
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import {MatIconModule} from '@angular/material/icon';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatNativeDateModule} from '@angular/material/core';
-import {ErrorStateMatcher} from '@angular/material/core';
-import {MatSelectModule} from '@angular/material/select';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatButtonModule} from '@angular/material/button';
+import { NgIf } from '@angular/common';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -30,12 +27,29 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatSelectModule, MatIconModule, MatDatepickerModule, MatNativeDateModule, MatDividerModule, MatButtonModule]
+  imports: [FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, NgIf, MatButtonModule]
 })
 export class LoginComponent {
-  dniFormControl = new FormControl('', [Validators.required, Validators.minLength(7), Validators.maxLength(8)]);
+  loginForm: FormGroup;
+
+  dniFormControl = new FormControl('', [Validators.required, 
+    Validators.minLength(7), 
+    Validators.maxLength(8),
+    Validators.pattern('^[0-9]*$')]);
 
   passFormControl = new FormControl('', [Validators.required, Validators.minLength(8)]);
 
   matcher = new MyErrorStateMatcher();
+
+  constructor() {
+    this.loginForm = new FormGroup({
+      dni: this.dniFormControl,
+      password: this.passFormControl
+    });
+  }
+
+  iniciarSesion(): void {
+    const credenciales = this.loginForm.value;
+    console.log(credenciales);
+  }
 }
