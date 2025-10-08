@@ -1,4 +1,5 @@
-import {Component} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   FormControl,
   FormGroup,
@@ -8,7 +9,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { NgIf } from '@angular/common';
+import { NgIf, NgFor } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -18,6 +19,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { CoberturasService } from 'src/app/core/services/coberturas.service';
+import { Cobertura } from 'src/app/core/interfaces/cobertura.model';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -32,11 +36,14 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
   standalone: true,
-  imports: [FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatSelectModule, NgIf, MatIconModule, MatDatepickerModule, MatNativeDateModule, MatDividerModule, MatButtonModule]
+  imports: [FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatSelectModule, NgIf, NgFor, MatIconModule, MatDatepickerModule, MatNativeDateModule, MatDividerModule, MatButtonModule]
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   passMatch: boolean = true;
+  maxDate: Date = new Date();
+
+  listaCoberturas: Cobertura[] = [];
 
   emailFormControl = new FormControl('', [Validators.required, Validators.email]);
 
@@ -48,6 +55,11 @@ export class RegisterComponent {
     Validators.maxLength(8),
     Validators.pattern('^[0-9]*$')]);
 
+    telefonoFormControl = new FormControl('', [Validators.required, 
+    Validators.minLength(10), 
+    Validators.maxLength(12),
+    Validators.pattern('^[0-9]*$')]);
+
   passFormControl = new FormControl('', [Validators.required, Validators.minLength(8)]);
   rePassFormControl = new FormControl('', [Validators.required, Validators.minLength(8)]);
 
@@ -55,27 +67,86 @@ export class RegisterComponent {
 
   selectFormControl = new FormControl('', [Validators.required]);
 
+  rolFormControl = new FormControl({ value: 'paciente', disabled: true });
+
   matcher = new MyErrorStateMatcher();
 
-  constructor() {
+  
+
+  constructor(private router: Router,
+    private auth: AuthService,
+    private coberturas: CoberturasService) {
+
+      // se hace el form para validar que todos los campos estén bien
     this.registerForm = new FormGroup({
-      email: this.emailFormControl,
-      nombre: this.nombreFormControl,
       apellido: this.apellidoFormControl,
-      dni: this.dniFormControl,
+      nombre: this.nombreFormControl,
+      fecha_nacimiento: this.dateFormControl,
       password: this.passFormControl,
-      fechaCumpleanios: this.dateFormControl,
-      cobertura: this.selectFormControl
+      usuario: this.nombreFormControl,
+      rol:  this.rolFormControl,
+      email: this.emailFormControl,
+      telefono: this.telefonoFormControl,
+      dni: this.dniFormControl,
+      id_cobertura: this.selectFormControl
     });
   }
 
-  registrarNuevoUsuario(): void {
-    if (this.passFormControl.value === this.rePassFormControl.value && this.registerForm.valid) {
+  ngOnInit(): void {
+    this.getCoberturas();
+  }
+
+  registrarNuevoUsuario(): void {if (this.passFormControl.value === this.rePassFormControl.value && this.registerForm.valid) {
       const credenciales = this.registerForm.value;
       this.passMatch = true;
-      console.log(credenciales);
+
+       // Transformar la fecha a string "YYYY-MM-DD"
+      const fecha = credenciales.fecha_nacimiento;
+      const fechaFormateada = fecha instanceof Date
+        ? fecha.toISOString().split('T')[0]
+        : fecha; // por si ya viene como string
+
+      const body = {
+        apellido: this.apellidoFormControl.value,
+        nombre: this.nombreFormControl.value,
+        fecha_nacimiento: fechaFormateada,
+        password: this.passFormControl.value,
+        usuario: this.nombreFormControl.value,
+        rol:  this.rolFormControl.value,
+        email: this.emailFormControl.value,
+        telefono: this.telefonoFormControl.value,
+        dni: this.dniFormControl.value,
+        id_cobertura: this.selectFormControl.value
+      }
+
+      this.auth.register(body).subscribe({
+      next: (data) => {
+        console.log(data)
+        alert('Usuario logueado exitosamente');
+
+        this.router.navigate(['/auth/login']);
+      },
+      error: (err) => {
+        console.error('Error de registro:', err);
+      }
+    });
     } else {
       this.passMatch = false;
     }
+  }
+
+  volverLogin(): void {
+    this.router.navigate(['/auth/login']);
+  }
+
+  getCoberturas(): void {
+    this.coberturas.getCoberturas().subscribe({
+      next: (data) => {
+        this.listaCoberturas = data.payload;
+      },
+      error: (err) => {
+        console.error('Error cargando coberturas:', err);
+      }
+    });
   }
 }

@@ -57,6 +57,27 @@
 
   <br>
 
+  <!-- TELEFONO -->
+  <mat-form-field class="full-width">
+      <mat-label>Telefono</mat-label>
+      <input matInput [formControl]="telefonoFormControl"
+         placeholder="Ex. 3423008899" [errorStateMatcher]="matcher">
+
+      <mat-error *ngIf="(telefonoFormControl.hasError('minlength') || telefonoFormControl.hasError('maxlength')) && !telefonoFormControl.hasError('required')">
+          Entre 10 y 12 caracteres
+      </mat-error>
+
+      <mat-error *ngIf="telefonoFormControl.hasError('pattern')">
+        Solo se permiten caracteres numéricos.
+      </mat-error>
+
+      <mat-error *ngIf="telefonoFormControl.hasError('required')">
+        Telefono es <strong>requerido</strong>
+      </mat-error>
+  </mat-form-field>
+
+  <br>
+
   <!-- EMAIL -->
   <mat-form-field class="full-width">
     <mat-label>Email</mat-label>
@@ -110,25 +131,28 @@
   <!-- TIPO DE USUARIO -->
   <mat-form-field class="full-width">
     <mat-label>Tipo de usuario</mat-label>
-    <input matInput disabled value="Paciente">
+    <input matInput disabled value="paciente">
   </mat-form-field>
 
   <br>
 
   <!-- FECHA NACIMIENTO -->
   <mat-form-field class="full-width">
-    <mat-label>Fecha nacimiento</mat-label>
-      <input matInput [matDatepicker]="picker" [formControl]="dateFormControl"
-      placeholder="MM/DD/YYYY" [errorStateMatcher]="matcher">
-      <mat-datepicker-toggle matIconSuffix [for]="picker">
-        <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
-      </mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
+  <mat-label>Fecha nacimiento</mat-label>
+  <input matInput [matDatepicker]="picker" [formControl]="dateFormControl"
+         placeholder="MM/DD/YYYY" [errorStateMatcher]="matcher"
+         [max]="maxDate">
+         
+  <mat-datepicker-toggle matSuffix [for]="picker">
+    <mat-icon>keyboard_arrow_down</mat-icon> 
+  </mat-datepicker-toggle>
+  
+  <mat-datepicker #picker></mat-datepicker>
 
-      <mat-error *ngIf="dateFormControl.hasError('required')">
-          Fecha nacimiento es <strong>requerida</strong>
-      </mat-error>
-  </mat-form-field>
+  <mat-error *ngIf="dateFormControl.hasError('required')">
+    Fecha nacimiento es <strong>requerida</strong>
+  </mat-error>
+</mat-form-field>
 
   <br>
 
@@ -136,8 +160,8 @@
   <mat-form-field class="full-width">
     <mat-label>Cobertura</mat-label>
       <mat-select [formControl]="selectFormControl" [errorStateMatcher]="matcher">
-        <mat-option value="js">
-          JS
+        <mat-option *ngFor="let cobertura of listaCoberturas" [value]="cobertura.id">
+          {{ cobertura.nombre }}
         </mat-option>
     </mat-select>
 
@@ -151,7 +175,7 @@
 
   <br>
 
-  <button mat-button color="warn">Volver</button>
+  <button mat-button color="warn" (click)="volverLogin()">Volver</button>
   </div>
 </form>
 </div>
