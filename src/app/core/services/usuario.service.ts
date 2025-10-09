@@ -47,4 +47,12 @@ export class UsuarioService {
     localStorage.removeItem('user_name');
     localStorage.removeItem('user_rol');
   }
+
+  saveUserUpdate(user: any): void {
+    localStorage.setItem('id_user_update', user.id);
+  }
+
+  getUserUpdate(): string | null {
+    return localStorage.getItem('id_user_update');
+  }
 }
