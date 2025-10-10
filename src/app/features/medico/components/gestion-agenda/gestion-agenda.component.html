@@ -1,1 +1,121 @@
-<p>gestion-agenda works!</p>
+<h1>Información de la agenda</h1>
+
+<mat-form-field>
+  <mat-label>Buscar en agenda</mat-label>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Escribe aquí" #input>
+</mat-form-field>
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <!-- id Column -->
+  <ng-container matColumnDef="id">
+    <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+  </ng-container>
+
+  <!-- hora_entrada Column -->
+  <ng-container matColumnDef="hora_entrada">
+    <mat-header-cell *matHeaderCellDef> Hora entrada </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.hora_entrada}} </mat-cell>
+  </ng-container>
+
+  <!-- hora_salida Column -->
+  <ng-container matColumnDef="hora_salida">
+    <mat-header-cell *matHeaderCellDef> Hora salida </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.hora_salida}} </mat-cell>
+  </ng-container>
+
+  <!-- fecha Column -->
+  <ng-container matColumnDef="fecha">
+    <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.fecha}} </mat-cell>
+  </ng-container>
+
+  <!-- id_medico Column -->
+  <ng-container matColumnDef="id_medico">
+    <mat-header-cell *matHeaderCellDef> ID medico </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.id_medico}} </mat-cell>
+  </ng-container>
+
+   <!-- id_especialidad Column -->
+  <ng-container matColumnDef="id_especialidad">
+    <mat-header-cell *matHeaderCellDef> ID especialidad </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.id_especialidad}} </mat-cell>
+  </ng-container>
+
+
+  <!-- editar Column -->
+  <!-- <ng-container matColumnDef="editar">
+    <mat-header-cell *matHeaderCellDef> Editar </mat-header-cell>
+    <mat-cell *matCellDef="let element"> 
+        <button (click)="getUser(element.id)" mat-icon-button color="primary" aria-label="Editar">
+            <mat-icon>edit</mat-icon>
+        </button>
+    </mat-cell>
+  </ng-container> -->
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</table>
+
+<div class="container">
+  <form class="form" [formGroup]="agendaForm">
+  <h1>Ver agenda</h1>
+
+
+  <!-- FECHA -->
+  <mat-form-field class="full-width">
+  <mat-label>Día de trabajo</mat-label>
+  <input matInput [matDatepicker]="picker" [formControl]="dateFormControl"
+         placeholder="MM/DD/YYYY" [errorStateMatcher]="matcher" (dateChange)="getAgenda()">
+         
+  <mat-datepicker-toggle matSuffix [for]="picker">
+    <mat-icon>keyboard_arrow_down</mat-icon> 
+  </mat-datepicker-toggle>
+  
+  <mat-datepicker #picker></mat-datepicker>
+
+  <mat-error *ngIf="dateFormControl.hasError('required')">
+    Día es <strong>requerido</strong>
+  </mat-error>
+  </mat-form-field>
+
+  <div class="form-actions">
+    <button mat-raised-button (click)="nuevoHorario(true)">Agregar nuevo horario</button>
+  </div>
+
+  <br>
+
+  <div *ngIf="verHorario? 'hidden': ''">
+    <table class="horarios">
+        <tr>
+            <mat-form-field appearance="fill">
+                <mat-label>Hora de inicio</mat-label>
+                <input matInput type="time" [formControl]="timeStarFormControl">
+
+                <mat-error *ngIf="timeStarFormControl.hasError('required')">
+                    Hora inicio es <strong>requerida</strong>
+                </mat-error>
+            </mat-form-field>
+        </tr>
+        <tr>
+            <mat-form-field appearance="fill">
+                <mat-label>Hora de fin</mat-label>
+                <input matInput type="time" [formControl]="timeEndFormControl">
+
+                <mat-error *ngIf="timeEndFormControl.hasError('required')">
+                    Hora fin es <strong>requerida</strong>
+                </mat-error>
+            </mat-form-field>
+        </tr>
+    </table>
+
+    <div class="form-actions">
+        <button mat-raised-button (click)="agregarHorario()">Agregar</button>
+
+        <br>
+
+        <button mat-raised-button (click)="nuevoHorario(false)">cancelar</button>
+    </div>
+  </div>
+</form>
+</div>
