@@ -14,6 +14,7 @@ export class EspecialidadService {
   private crearEspecialidadUrl = 'http://localhost:4000/api/crearEspecialidad';
   private modificarEspecialidadUrl = 'http://localhost:4000/api/modificarEspecialidad/';
   private eliminarEspecialidadUrl = 'http://localhost:4000/api/eliminarEspecialidad/';
+  private obtenerEspecialidadIdUrl = 'http://localhost:4000/api/obtenerEspecialidad/';
 
   constructor(private http: HttpClient) { }
 
@@ -43,5 +44,17 @@ export class EspecialidadService {
 
   eliminarEspecialidad(id: number): Observable<any> {
     return this.http.delete(this.eliminarEspecialidadUrl + id);
+  }
+
+  obtenerEspecialidadId(id: number): Observable<any> {
+    return this.http.get(this.obtenerEspecialidadIdUrl + id);
+  }
+
+  saveEspecialidadUpdate(especialidad: any): void {
+    localStorage.setItem('id_especialidad_update', especialidad.id);
+  }
+
+  getEspecialidadUpdate(): string | null {
+    return localStorage.getItem('id_especialidad_update');
   }
 }

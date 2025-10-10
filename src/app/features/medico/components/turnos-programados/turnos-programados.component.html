@@ -1,1 +1,60 @@
-<p>turnos-programados works!</p>
+   <h1>Información de turnos</h1>
+
+    <mat-form-field>
+        <mat-label>Buscar turno</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Escribe aquí" #input>
+    </mat-form-field>
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8"> 
+            
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+            <mat-cell *matCellDef="let element" (click)="getNota(true, element.nota)"> {{element.id}} </mat-cell>
+         </ng-container>
+
+        <ng-container matColumnDef="hora">
+            <mat-header-cell *matHeaderCellDef> Hora </mat-header-cell>
+            <mat-cell *matCellDef="let element" (click)="getNota(true, element.nota)"> {{element.hora}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="nombre">
+            <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+            <mat-cell *matCellDef="let element" (click)="getNota(true, element.nota)"> {{element.nombre}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="edad">
+            <mat-header-cell *matHeaderCellDef> Edad </mat-header-cell>
+            <mat-cell *matCellDef="let element" (click)="getNota(true, element.nota)"> {{element.edad}} </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </table>
+
+    <div class="nota" *ngIf="verNota">
+        {{ notaSeleccionada }}
+    </div>
+
+<br>
+
+<div class="container">
+  <div class="form">
+    <h1>Seleccionar día</h1>
+
+    <mat-form-field class="full-width">
+      <mat-label>Día de turnos</mat-label>
+      <input matInput [matDatepicker]="picker" [formControl]="dateFormControl"
+             placeholder="MM/DD/YYYY" [errorStateMatcher]="matcher" (dateChange)="getTurnos()">
+              
+      <mat-datepicker-toggle matSuffix [for]="picker">
+        <mat-icon>keyboard_arrow_down</mat-icon> 
+      </mat-datepicker-toggle>
+      
+      <mat-datepicker #picker></mat-datepicker>
+
+      <mat-error *ngIf="dateFormControl.hasError('required')">
+        Día es <strong>requerido</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+</div>
