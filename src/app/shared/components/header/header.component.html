@@ -1,5 +1,38 @@
 <header class="header">
     <div class="header-container">
-        <h1>Bienvenido a la clínica Romellier</h1>
+        
+        <ng-container *ngIf="isLoggedIn; else contenidoNoLogueado">
+            
+            <h1 class="logo">Clínica Romellier</h1>
+
+            <div class="user-info-bar">
+                
+                <span class="user-name">
+                    Hola, {{ nombreUsuario  }}
+                </span>
+                
+                <mat-icon 
+                    class="info-icon" 
+                    [matTooltip]="rolTooltip" 
+                    matTooltipPosition="below"
+                >
+                    info
+                </mat-icon>
+                
+                <button 
+                    mat-button 
+                    color="warn" 
+                    (click)="cerrarSesion()"
+                > 
+                    Cerrar Sesión
+                </button>
+            </div>
+            
+        </ng-container>
+
+        <ng-template #contenidoNoLogueado >
+            <h1 class="logo">Bienvenido a la Clinica Romellier</h1>
+        </ng-template>
+        
     </div>
 </header>

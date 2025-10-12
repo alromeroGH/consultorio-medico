@@ -9,11 +9,11 @@ import { HomeComponent } from './components/home/home.component';
 @NgModule({
   declarations: [
     PublicComponent,
-    HomeComponent
   ],
   imports: [
     CommonModule,
-    PublicRoutingModule
+    PublicRoutingModule,
+    HomeComponent
   ]
 })
 export class PublicModule { }

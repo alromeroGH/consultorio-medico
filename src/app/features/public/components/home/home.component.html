@@ -1,1 +1,36 @@
-<p>home works!</p>
+<div class="home-container">
+
+    <ng-container *ngIf="isLoggedIn; else contenidoNoLogueado">
+        
+        <div class="content-logueado">
+            <h2>¡Bienvenido a la Clínica Romellier!</h2>
+            <p>¿Que actividad desea realizar?</p>
+            <ng-container *ngIf="rolUsuario === 'paciente'">
+                <button mat-raised-button color="primary" routerLink="/paciente/nuevo-turno">Nuevo turno</button>
+                <button mat-raised-button color="primary" routerLink="/paciente/mis-turnos">Mis Turnos</button>
+                <button mat-raised-button color="primary" routerLink="/paciente/perfil">Mi Perfil</button>
+            </ng-container>
+            <ng-container *ngIf="rolUsuario === 'operador'" >
+                <button mat-raised-button color="primary" routerLink="/operador/gestion-agenda">Gestion de agenda</button>
+                <button mat-raised-button color="primary" routerLink="/operador/nuevo-paciente">Nuevo paciente</button>
+            </ng-container>
+            <ng-container *ngIf="rolUsuario === 'medico'" >
+                <button mat-raised-button color="primary" routerLink="/medico/gestion-agenda">Gestion de agenda</button>
+                <button mat-raised-button color="primary" routerLink="/medico/turnos-programados">Turnos programados</button>
+            </ng-container>
+        </div>
+
+    </ng-container>
+
+    <ng-template #contenidoNoLogueado>
+        
+        <div class="content-no-logueado">
+            <h2>Hola!</h2>
+            <p>Para acceder a la información de la Clínica Romellier, debes ingresar a tu cuenta o crear una en caso de que no tengas una.</p>
+            <button mat-raised-button routerLink="/auth/login">Iniciar Sesión</button>
+            <button mat-raised-button routerLink="/auth/register">Registrarse</button>
+        </div>
+
+    </ng-template>
+
+</div>
