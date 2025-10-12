@@ -1,0 +1,98 @@
+:host {
+  display: flex;
+  justify-content: center;
+  padding-top: 64px;
+  padding-bottom: 64px;
+  min-height: 80vh; 
+  background-color: var(--color-background);
+}
+
+.mat-card {
+  width: 100%;
+  max-width: 1000px; 
+  border-left: 5px solid var(--color-primary);
+  border-radius: 4px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  background-color: var(--color-surface);
+  padding: 32px;
+}
+
+.mat-card-header {
+  border-bottom: 2px solid #f0f0f0;
+  margin-bottom: 0;
+  padding-bottom: 32px;
+  display: block; 
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 16px;
+}
+
+.mat-card-title {
+  color: var(--color-primary);
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  margin: 0; 
+}
+
+.mat-card-subtitle {
+  color: var(--color-text-light);
+  font-size: 1rem;
+  font-weight: 400;
+  margin-top: 8px; 
+  margin-bottom: 0;
+}
+
+form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 32px 16px; 
+}
+
+mat-form-field.mat-form-field:last-of-type {
+    grid-column: 1 / -1; 
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+.mat-form-field.mat-form-field-disabled .mat-form-field-label {
+    color: var(--color-text-light);
+    font-weight: 500;
+}
+
+.mat-card-actions {
+  display: flex;
+  gap: 24px;
+  padding-top: 32px;
+  margin-top: 32px;
+}
+
+.mat-raised-button {
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 0 24px;
+  transition: all 0.2s ease-in-out;
+}
+
+.mat-raised-button[color="accent"] {
+  background-color: var(--color-success); 
+}
+.mat-raised-button[color="accent"]:hover {
+  filter: brightness(1.1);
+}
+
+.mat-raised-button[color="primary"] {
+  background-color: var(--color-primary);
+}
+
+.mat-button {
+  color: var(--color-error);
+  font-weight: 500;
+}
