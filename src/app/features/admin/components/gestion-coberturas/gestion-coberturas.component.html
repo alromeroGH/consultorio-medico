@@ -1,1 +1,65 @@
-<p>gestion-coberturas works!</p>
+<h1>Información de las coberturas</h1>
+
+<mat-form-field>
+  <mat-label>Buscar coberturas</mat-label>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Escribe aquí" #input>
+</mat-form-field>
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <!-- id Column -->
+  <ng-container matColumnDef="id">
+    <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+  </ng-container>
+
+  <!-- cobertura Column -->
+  <ng-container matColumnDef="cobertura">
+    <mat-header-cell *matHeaderCellDef> Cobertura </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.cobertura}} </mat-cell>
+  </ng-container>
+
+  <!-- editar Column -->
+  <ng-container matColumnDef="editar">
+    <mat-header-cell *matHeaderCellDef> Editar </mat-header-cell>
+    <mat-cell *matCellDef="let element"> 
+        <button (click)="getCobertura(element.id)" mat-icon-button color="primary" aria-label="Editar">
+            <mat-icon>edit</mat-icon>
+        </button>
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</table>
+
+<br>
+<hr>
+<br>
+
+<!-- FORMULARIO ESPECIALIDAD -->
+
+<div class="container">
+  <form class="form" [formGroup]="createCoberturaForm">
+  <h1>Crear especialidad</h1>
+
+  <!-- ESPECIALIDAD -->
+        <mat-form-field class="full-width">
+          <mat-label>Especialidad</mat-label>
+          <input matInput [formControl]="coberturaFormControl" [errorStateMatcher]="matcher">
+
+          <mat-error *ngIf="coberturaFormControl.hasError('minlength') && !coberturaFormControl.hasError('required')">
+            Mínimo 5 caracteres
+          </mat-error>
+
+          <mat-error *ngIf="coberturaFormControl.hasError('required')">
+            Especialidad es <strong>requerida</strong>
+          </mat-error>
+        </mat-form-field>
+  
+  <div class="form-actions">
+    <button *ngIf="!buttonUpdate" mat-raised-button (click)="crearNuevaCobertura()">Crear</button>
+    <br>
+    <button *ngIf="buttonUpdate" mat-raised-button (click)="actualizarCobertura()">Actualizar</button>
+  </div>
+</form>
+</div>

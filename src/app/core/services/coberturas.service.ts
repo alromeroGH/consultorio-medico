@@ -11,6 +11,7 @@ export class CoberturasService {
   private crearCoberturaUrl = 'http://localhost:4000/api/crearCobertura';
   private modificarCoberturaUrl = 'http://localhost:4000/api/modificarCobertura/';
   private eliminarCoberturaUrl = 'http://localhost:4000/api/eliminarCobertura/';
+  private obtenerCoberturaIdUrl = 'http://localhost:4000/api/obtenerCobertura/';
 
   constructor(private http: HttpClient) { }
 
@@ -28,5 +29,17 @@ export class CoberturasService {
 
   eliminarCobertura(id: number): Observable<any> {
     return this.http.delete(this.eliminarCoberturaUrl + id);
+  }
+
+  obtenerCoberturaId(id: number): Observable<any> {
+    return this.http.get(this.obtenerCoberturaIdUrl + id);
+  }
+
+  saveCoberturaUpdate(cobertura: any): void {
+    localStorage.setItem('id_cobertura_update', cobertura.id);
+  }
+
+  getCoberturaUpdate(): string | null {
+    return localStorage.getItem('id_cobertura_update');
   }
 }
