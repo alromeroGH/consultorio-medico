@@ -1,0 +1,52 @@
+.home-container {
+    display: flex;
+    height: 100vh;
+    justify-content: center; 
+    align-items: center; 
+    flex-grow: 1; 
+    flex-direction: column;
+    padding: 30px 20px; 
+}
+
+.content-logueado,
+.content-no-logueado {
+    max-width: 500px;
+    width: 100%;
+    text-align: center; 
+    padding: 20px;
+}
+
+.content-logueado h2,
+.content-no-logueado h2 {
+    margin-bottom: 10px;
+    color: var(--color-text);
+}
+
+.content-logueado p,
+.content-no-logueado p {
+    margin-bottom: 30px; 
+    font-size: 1.1em;
+    text-align: justify; 
+}
+
+.content-logueado button,
+.content-no-logueado button {
+    margin: 5px 10px; 
+}
+
+.content-logueado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.content-logueado button {
+    margin: 5px;
+}
+
+.button-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}

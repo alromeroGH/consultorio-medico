@@ -13,11 +13,11 @@ import { DatosPersonalesComponent } from './components/datos-personales/datos-pe
     PacienteComponent,
     NuevoTurnoComponent,
     MisTurnosComponent,
-    DatosPersonalesComponent
   ],
   imports: [
     CommonModule,
-    PacienteRoutingModule
+    PacienteRoutingModule,
+    DatosPersonalesComponent
   ]
 })
 export class PacienteModule { }

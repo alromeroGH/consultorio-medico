@@ -71,7 +71,9 @@ export class LoginComponent {
           this.auth.saveToken(response.jwt);
           this.user.saveUser(response.payload[0]);
 
-          this.router.navigate(['/public/home']);
+          this.router.navigate(['/public/home']).then(() => {
+            window.location.reload();
+          });
         } else {
           alert('Usuario o contraseña incorrectos')
         } 
