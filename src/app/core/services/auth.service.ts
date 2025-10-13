@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs'
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,9 @@ export class AuthService {
   private loginUrl = 'http://localhost:4000/api/login';
   private registerUrl = 'http://localhost:4000/api/crearUsuario';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private router: Router
+  ) { }
 
   login(body: any): Observable<any> {
     return this.http.post(this.loginUrl, body);
@@ -29,5 +32,9 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('jwt_token');
+  }
+
+  redirectToHome() {
+    this.router.navigate(['/public/home']);
   }
 }
