@@ -1,1 +1,85 @@
-<p>datos-personales works!</p>
+<mat-card>
+  <mat-card-header>
+  <div class="header-content">
+    <mat-card-title>Datos Personales de {{ nombreUsuario }} {{ apellidoUsuario }}</mat-card-title>
+    <mat-card-subtitle class="role-display">Rol: {{ rolUsuario }}</mat-card-subtitle>
+  </div>
+</mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="usuarioForm">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput [value]="nombreUsuario" disabled />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>DNI</mat-label>
+        <input matInput formControlName="dni" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" />
+        <mat-error *ngIf="usuarioForm.get('email')?.hasError('required')"
+          >El email es obligatorio</mat-error
+        >
+        <mat-error *ngIf="usuarioForm.get('email')?.hasError('email')"
+          >Formato de email inválido</mat-error
+        >
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telefono" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Cobertura</mat-label>
+        <mat-select formControlName="cobertura">
+          <mat-option
+            *ngFor="let cobertura of coberturas$ | async"
+            [value]="cobertura.id"
+          >
+            {{ cobertura.nombre || cobertura.descripcion }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nueva Contraseña</mat-label>
+        <input matInput type="password" formControlName="nuevaContraseña" />
+        <mat-error
+          *ngIf="usuarioForm.get('nuevaContraseña')?.hasError('minlength')"
+        >
+          La contraseña debe tener al menos 8 caracteres.
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="activarEdicion()"
+      *ngIf="!modoEdicion"
+    >
+      <mat-icon>edit</mat-icon> Editar Datos
+    </button>
+
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="guardarCambios()"
+      [disabled]="usuarioForm.invalid"
+      *ngIf="modoEdicion"
+    >
+      <mat-icon>save</mat-icon> Guardar Cambios
+    </button>
+
+    <button mat-button (click)="cancelarEdicion()" *ngIf="modoEdicion">
+      Cancelar
+    </button>
+  </mat-card-actions>
+</mat-card>

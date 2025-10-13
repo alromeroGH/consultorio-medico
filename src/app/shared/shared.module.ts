@@ -17,10 +17,10 @@ import { PopUpComponent } from './components/pop-up/pop-up.component';
   declarations: [
     SharedComponent,
     FooterComponent,
-    HeaderComponent,
     PopUpComponent
   ],
   imports: [
+    HeaderComponent,
     MatIconModule,
     NgIf,
     CommonModule,

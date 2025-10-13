@@ -4,20 +4,44 @@
     padding: 20px 25px; 
     font-family: var(--font-family);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    display: flex;
+    align-items: center;
 }
 
 .header-container {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto; 
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    text-align: center;
 }
 
-.header-container h1 {
-    font-size: 2em; 
-    margin: 0; 
+.logo {
+    margin: 0;
     padding: 0;
+    font-size: 2em; 
+    color: var(--color-surface);
+    font-weight: 500;
+}
+
+.user-info-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px; 
+}
+
+.user-name {
+    font-weight: 400;
     color: var(--color-surface); 
+    white-space: nowrap; 
+}
+
+.info-icon {
+    cursor: pointer;
+    color: var(--color-surface);
+}
+
+.info-icon:hover {
+    color: var(--color-warning); 
 }
