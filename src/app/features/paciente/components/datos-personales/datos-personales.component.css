@@ -1,13 +1,11 @@
-:host {
-  display: flex;
-  justify-content: center;
-  padding-top: 64px;
-  padding-bottom: 64px;
-  min-height: 80vh; 
-  background-color: var(--color-background);
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px;
+  height: 80vh;
 }
-
 .mat-card {
+    position: relative;
   width: 100%;
   max-width: 1000px; 
   border-left: 5px solid var(--color-primary);
@@ -15,6 +13,13 @@
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
   background-color: var(--color-surface);
   padding: 32px;
+}
+
+.back-button {
+  top: 8px; 
+  left: 8px; 
+  color: var(--color-text-light);
+  z-index: 10;
 }
 
 .mat-card-header {

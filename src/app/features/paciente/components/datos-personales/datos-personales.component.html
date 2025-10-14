@@ -1,16 +1,41 @@
+<div class="container">
+    <button
+  mat-icon-button
+  (click)="volverAtras()"
+  class="back-button"
+  title="Volver al inicio"
+>
+  <mat-icon>arrow_back</mat-icon>
+</button>
+
 <mat-card>
   <mat-card-header>
-  <div class="header-content">
-    <mat-card-title>Datos Personales de {{ nombreUsuario }} {{ apellidoUsuario }}</mat-card-title>
-    <mat-card-subtitle class="role-display">Rol: {{ rolUsuario }}</mat-card-subtitle>
-  </div>
-</mat-card-header>
+    <div class="header-content">
+      <mat-card-title
+        >Datos Personales de {{ nombreUsuario }}
+        {{ apellidoUsuario }}</mat-card-title
+      >
+      <mat-card-subtitle class="role-display"
+        >Rol: {{ rolUsuario }}</mat-card-subtitle
+      >
+    </div>
+  </mat-card-header>
 
   <mat-card-content>
     <form [formGroup]="usuarioForm">
       <mat-form-field appearance="outline">
         <mat-label>Nombre</mat-label>
         <input matInput [value]="nombreUsuario" disabled />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Apellido</mat-label>
+        <input matInput [value]="apellidoUsuario" disabled />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha nacimiento</mat-label>
+        <input matInput [value]="fechaNacimientoUsuario | date:'yyyy-MM-dd'" disabled />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -41,13 +66,13 @@
             *ngFor="let cobertura of coberturas$ | async"
             [value]="cobertura.id"
           >
-            {{ cobertura.nombre || cobertura.descripcion }}
+            {{ cobertura.nombre  }}
           </mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Nueva Contraseña</mat-label>
+        <mat-label>Contraseña</mat-label>
         <input matInput type="password" formControlName="nuevaContraseña" />
         <mat-error
           *ngIf="usuarioForm.get('nuevaContraseña')?.hasError('minlength')"
@@ -83,3 +108,5 @@
     </button>
   </mat-card-actions>
 </mat-card>
+
+</div>

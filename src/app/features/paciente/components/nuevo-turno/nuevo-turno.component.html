@@ -1,1 +1,84 @@
-<p>nuevo-turno works!</p>
+<div class="container">
+  <mat-card>
+    <mat-card-title>Solicitar un Nuevo Turno</mat-card-title>
+    <mat-card-subtitle
+      >Complete los siguientes datos para agendar su cita.</mat-card-subtitle
+    >
+    <mat-card-content>
+      <form
+        [formGroup]="form"
+        (ngSubmit)="confirmarTurno()"
+        class="flex flex-col gap-4"
+      >
+        <mat-form-field appearance="outline">
+          <mat-label>1. Elija una Especialidad</mat-label>
+          <mat-select formControlName="especialidad">
+            <mat-option *ngFor="let esp of especialidades" [value]="esp.id">
+              {{ esp.descripcion }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>2. Elija un Profesional</mat-label>
+          <mat-select formControlName="profesional">
+            <mat-option
+              *ngFor="let medico of medicos"
+              [value]="medico.id_medico"
+            >
+              {{ medico.nombre }} {{ medico.apellido }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>3. Elija una Fecha</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="fecha"
+            [min]="minDate"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>4. Horario</mat-label>
+          <mat-select formControlName="hora">
+            <mat-option
+              *ngFor="let horario of horariosDisponibles"
+              [value]="horario"
+            >
+              {{ horario.hora }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>5. Notas para el profesional</mat-label>
+          <textarea
+            matInput
+            formControlName="notas"
+            placeholder="Ej: Motivo de la consulta, síntomas, etc."
+          ></textarea>
+        </mat-form-field>
+      </form>
+    </mat-card-content>
+    <mat-card-actions class="flex justify-end gap-2">
+      <button mat-stroked-button color="warn" (click)="cancelar()">
+        Cancelar
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="confirmarTurno()"
+        [disabled]="form.invalid"
+      >
+        Confirmar Turno
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
