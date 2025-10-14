@@ -16,6 +16,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { map, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-datos-personales',
@@ -29,7 +30,7 @@ import { map, Observable } from 'rxjs';
     MatCardModule,
     MatSelectModule,
     MatOptionModule,
-    MatIconModule,
+    MatIconModule
   ],
   templateUrl: './datos-personales.component.html',
   styleUrls: ['./datos-personales.component.css'],
@@ -56,7 +57,7 @@ export class DatosPersonalesComponent {
     10
   );
 
-  constructor(public usuarioService: UsuarioService, private fb: FormBuilder, private coberturasService: CoberturasService) {
+  constructor(public usuarioService: UsuarioService, private fb: FormBuilder, private coberturasService: CoberturasService, private router: Router) {
     this.usuarioForm = this.fb.group({
       email: [
         { value: '', disabled: true },
@@ -180,5 +181,9 @@ export class DatosPersonalesComponent {
   cancelarEdicion() {
     this.modoEdicion = false;
     this.cargarDatosUsuario();
+  }
+
+  volverAtras() {
+    this.router.navigate(['/public/home']);
   }
 }

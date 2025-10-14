@@ -11,13 +11,13 @@ import { DatosPersonalesComponent } from './components/datos-personales/datos-pe
 @NgModule({
   declarations: [
     PacienteComponent,
-    NuevoTurnoComponent,
     MisTurnosComponent,
   ],
   imports: [
     CommonModule,
     PacienteRoutingModule,
-    DatosPersonalesComponent
+    DatosPersonalesComponent,
+    NuevoTurnoComponent
   ]
 })
 export class PacienteModule { }
