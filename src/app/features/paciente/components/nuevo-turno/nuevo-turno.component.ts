@@ -2,10 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { map, switchMap, takeUntil, filter } from 'rxjs/operators';
-
-// Modulos de Angular Material
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
@@ -13,8 +9,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
-
-// Servicios
 import { TurnosService } from '../../../../core/services/turnos.service';
 import { EspecialidadService } from '../../../../core/services/especialidad.service';
 import { UsuarioService } from '../../../../core/services/usuario.service';
@@ -74,12 +68,12 @@ export class NuevoTurnoComponent {
     this.minDate = new Date();
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.cargarDatosIniciales();
     this.escucharCambiosDelFormulario();
   }
 
-  private cargarDatosIniciales(): void {
+  private cargarDatosIniciales() {
     this.especialidadService.obtenerEspecialidades().subscribe((res: any) => {
       console.log('Respuesta completa de especialidades:', res);
       if (Array.isArray(res)) {
@@ -155,7 +149,7 @@ export class NuevoTurnoComponent {
     });
   }
 
-  private cargarMedicos(id: number): void {
+  private cargarMedicos(id: number) {
     this.especialidadService
       .obtenerMedicoPorEspecialidad(id)
       .subscribe((res: any) => {
@@ -166,7 +160,7 @@ export class NuevoTurnoComponent {
         }
       });
   }
-  private cargarHorarios(): void {
+  private cargarHorarios() {
     const medicoId = this.form.get('profesional')?.value;
     const fechaSeleccionada = this.form.get('fecha')?.value;
 
@@ -202,7 +196,7 @@ export class NuevoTurnoComponent {
       });
     }
   }
-  private generarHorariosEntre(horaInicio: string, horaFin: string): string[] {
+  private generarHorariosEntre(horaInicio: string, horaFin: string) {
     const horarios: string[] = [];
 
     const [hInicio, mInicio] = horaInicio.split(':').map(Number);
@@ -226,11 +220,11 @@ export class NuevoTurnoComponent {
     return horarios;
   }
 
-  private dosDigitos(num: number): string {
+  private dosDigitos(num: number) {
     return num < 10 ? `0${num}` : `${num}`;
   }
 
-  confirmarTurno(): void {
+  confirmarTurno(){
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -238,18 +232,12 @@ export class NuevoTurnoComponent {
 
     const formValue = this.form.getRawValue();
     const userId = this.usuarioService.getUserId();
-
-    // El valor de 'hora' ahora es un objeto {hora: string, id_agenda: number}
-    // o el id_agenda directamente, dependiendo de tu HTML.
-    // Asumamos que guardaste el objeto.
     const horaSeleccionada = formValue.hora as any;
-
-    // ESTE ES EL BODY CORRECTO PARA TU BASE DE DATOS
     const body = {
       id_paciente: Number(userId),
-      id_agenda: horaSeleccionada.id_agenda, // <-- El dato clave que faltaba
+      id_agenda: horaSeleccionada.id_agenda, 
       fecha: new Date(formValue.fecha!).toISOString().split('T')[0],
-      hora: horaSeleccionada.hora, // <-- La hora del objeto
+      hora: horaSeleccionada.hora,
       nota: formValue.notas || '',
       id_cobertura: this.coberturaUsuario,
     };
@@ -263,12 +251,11 @@ export class NuevoTurnoComponent {
       },
       error: (err) => {
         console.error('Error al confirmar el turno:', err);
-        // Aquí podrías mostrar un mensaje de error al usuario
       },
     });
   }
 
-  cancelar(): void {
+  cancelar() {
     this.router.navigate(['/public/home']);
   }
 }

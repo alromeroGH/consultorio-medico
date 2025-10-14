@@ -1,65 +1,66 @@
 .container {
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 800px;
+  margin: 32px auto;
   padding: 24px;
   height: 80vh;
-}
-.mat-card {
-    position: relative;
-  width: 100%;
-  max-width: 1000px; 
-  border-left: 5px solid var(--color-primary);
-  border-radius: 4px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
   background-color: var(--color-surface);
-  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.back-button {
-  top: 8px; 
-  left: 8px; 
-  color: var(--color-text-light);
-  z-index: 10;
+.mat-card {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  border-left: 4px solid var(--color-primary);
+  border-radius: 10px;
+  background-color: var(--color-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 28px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .mat-card-header {
-  border-bottom: 2px solid #f0f0f0;
-  margin-bottom: 0;
-  padding-bottom: 32px;
-  display: block; 
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  display: block;
 }
 
 .header-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-bottom: 8px;
 }
 
 .mat-card-title {
   color: var(--color-primary);
-  font-size: 1.6rem;
-  font-weight: 500;
-  letter-spacing: -0.5px;
-  margin: 0; 
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  margin: 0;
 }
 
 .mat-card-subtitle {
   color: var(--color-text-light);
   font-size: 1rem;
-  font-weight: 400;
-  margin-top: 8px; 
-  margin-bottom: 0;
+  margin-top: 6px;
 }
 
 form {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 32px 16px; 
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px 16px;
 }
 
 mat-form-field.mat-form-field:last-of-type {
-    grid-column: 1 / -1; 
+  grid-column: 1 / -1;
 }
 
 .mat-form-field {
@@ -67,37 +68,51 @@ mat-form-field.mat-form-field:last-of-type {
 }
 
 .mat-form-field.mat-form-field-disabled .mat-form-field-label {
-    color: var(--color-text-light);
-    font-weight: 500;
+  color: var(--color-text-light);
+  font-weight: 500;
 }
 
 .mat-card-actions {
   display: flex;
-  gap: 24px;
-  padding-top: 32px;
-  margin-top: 32px;
+  justify-content: flex-end;
+  gap: 16px;
+  padding-top: 24px;
+  margin-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .mat-raised-button {
   text-transform: uppercase;
   font-weight: 600;
-  border-radius: 4px;
-  padding: 0 24px;
-  transition: all 0.2s ease-in-out;
-}
-
-.mat-raised-button[color="accent"] {
-  background-color: var(--color-success); 
-}
-.mat-raised-button[color="accent"]:hover {
-  filter: brightness(1.1);
+  border-radius: 6px;
+  padding: 8px 20px;
+  transition: all 0.25s ease-in-out;
 }
 
 .mat-raised-button[color="primary"] {
   background-color: var(--color-primary);
+  color: #fff;
+}
+
+.mat-raised-button[color="primary"]:hover {
+  background-color: #0069d9;
+}
+
+.mat-raised-button[color="accent"] {
+  background-color: var(--color-success);
+  color: #fff;
+}
+
+.mat-raised-button[color="accent"]:hover {
+  filter: brightness(1.1);
 }
 
 .mat-button {
   color: var(--color-error);
   font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.mat-button:hover {
+  color: #a71d2a;
 }

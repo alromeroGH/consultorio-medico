@@ -1,0 +1,62 @@
+.turnos-container {
+  min-height: 80vh;
+  max-width: 800px;
+  margin: 32px auto;
+  padding: 24px;
+  background-color: var(--color-surface);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.turnos-container h1 {
+  color: var(--color-primary);
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.turno-card {
+  margin-bottom: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border-left: 4px solid var(--color-primary);
+  background-color: var(--color-surface);
+}
+
+.turno-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+mat-card-header {
+  background-color: var(--color-primary);
+  color: #fff;
+  padding: 12px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+mat-card-title {
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+mat-card-content {
+  padding: 16px;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+mat-card-content p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+}
+
+.no-turnos {
+  text-align: center;
+  color: var(--color-secondary);
+  font-size: 1rem;
+  margin-top: 32px;
+}
