@@ -1,1 +1,28 @@
-<p>mis-turnos works!</p>
+<div class="turnos-container">
+    <button
+  mat-icon-button
+  (click)="volverAtras()"
+  class="back-button"
+  title="Volver al inicio"
+>
+  <mat-icon>arrow_back</mat-icon>
+</button>
+  <h1>Mis Turnos</h1>
+  <div *ngIf="turnos$ | async as turnos">
+    <div *ngIf="turnos.length > 0; else noTurnos">
+      <mat-card *ngFor="let turno of turnos" class="turno-card" (click)="mostrarDetalles(turno)">
+        <mat-card-header>
+          <mat-card-title>{{ turno.fecha | date:'dd/MM/yyyy' }} - {{ turno.hora }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content *ngIf="turnoSeleccionado === turno">
+          <p>{{ formatearFechaDetallada(turno.fecha) }}</p>
+          <p>Especialista: {{ turno.nombre_medico }} {{ turno.apellido_medico }}</p>
+          <p>Especialidad: {{ turno.especialidad }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <ng-template #noTurnos>
+      <p>No tienes turnos asignados.</p>
+    </ng-template>
+  </div>
+</div>
