@@ -8,7 +8,9 @@ import { SharedRoutingModule } from './shared-routing.module';
 import { SharedComponent } from './shared.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
-import { PopUpComponent } from './components/pop-up/pop-up.component';
+
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 
@@ -16,20 +18,20 @@ import { PopUpComponent } from './components/pop-up/pop-up.component';
 @NgModule({
   declarations: [
     SharedComponent,
-    FooterComponent,
-    PopUpComponent
+    FooterComponent
   ],
   imports: [
     HeaderComponent,
     MatIconModule,
     NgIf,
     CommonModule,
-    SharedRoutingModule
+    SharedRoutingModule,
+    MatButtonModule,
+    MatDialogModule
   ],
   exports: [
     FooterComponent,
-    HeaderComponent,
-    PopUpComponent
+    HeaderComponent
   ]
 })
 export class SharedModule { }

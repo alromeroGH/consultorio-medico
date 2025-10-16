@@ -13,6 +13,8 @@ import { TurnosService } from '../../../../core/services/turnos.service';
 import { EspecialidadService } from '../../../../core/services/especialidad.service';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { AgendaService } from '../../../../core/services/agenda.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PopUpComponent } from 'src/app/shared/components/pop-up/pop-up.component';
 
 @Component({
   selector: 'app-nuevo-turno',
@@ -63,7 +65,8 @@ export class NuevoTurnoComponent {
     private turnosService: TurnosService,
     private especialidadService: EspecialidadService,
     private usuarioService: UsuarioService,
-    private agendaService: AgendaService
+    private agendaService: AgendaService,
+    private dialog: MatDialog
   ) {
     this.minDate = new Date();
   }
@@ -96,9 +99,7 @@ export class NuevoTurnoComponent {
             const usuario = datosUsuarioArray[0];
             this.coberturaUsuario = usuario.id_cobertura;
           } else {
-            console.error(
-              'No se encontró el usuario o la estructura de la respuesta es incorrecta.'
-            );
+            this.mostrarAlerta('No encontrado', 'No se encontró el usuario o la estructura de la respuesta es incorrecta.')
           }
         },
         error: (err) => {
@@ -246,16 +247,46 @@ export class NuevoTurnoComponent {
 
     this.turnosService.asignarTurnoPaciente(body).subscribe({
       next: () => {
-        console.log('Turno confirmado exitosamente.');
+        this.mostrarAlerta('Exito', 'Turno confirmado exitosamente.')
         this.router.navigate(['/public/home']);
       },
       error: (err) => {
-        console.error('Error al confirmar el turno:', err);
+        this.mostrarAlerta('Error', `Error al confirmar el turno: ${err}`)
       },
     });
   }
 
   cancelar() {
     this.router.navigate(['/public/home']);
+  }
+
+    /**
+   * Función genérica para mostrar el pop-up de alerta.
+   * @param titulo Título de la ventana modal.
+   * @param mensaje Mensaje principal.
+   * @param mostrarCancelar Define si se muestra el botón Cancelar (opcional, por defecto false).
+   */
+  mostrarAlerta(titulo: string, mensaje: string, mostrarCancelar: boolean = false): void {
+    
+    const datosAlerta: any = {
+      titulo: titulo,
+      mensaje: mensaje,
+      mostrarBotonCancelar: mostrarCancelar
+    };
+  
+    const dialogRef = this.dialog.open(PopUpComponent, {
+      width: '380px', 
+      data: datosAlerta 
+    });
+  
+    dialogRef.afterClosed().subscribe(resultado => {
+      if (resultado) {
+        console.log('El usuario hizo clic en Aceptar.');
+      } else if (resultado === false) {
+        console.log('El usuario hizo clic en Cancelar.');
+      } else {
+        console.log('El diálogo fue cerrado sin seleccionar una acción.');
+      }
+    });
   }
 }

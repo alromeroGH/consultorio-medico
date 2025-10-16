@@ -17,6 +17,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { map, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { PopUpComponent } from 'src/app/shared/components/pop-up/pop-up.component';
 
 @Component({
   selector: 'app-datos-personales',
@@ -57,7 +59,7 @@ export class DatosPersonalesComponent {
     10
   );
 
-  constructor(public usuarioService: UsuarioService, private fb: FormBuilder, private coberturasService: CoberturasService, private router: Router) {
+  constructor(public usuarioService: UsuarioService, private fb: FormBuilder, private coberturasService: CoberturasService, private router: Router, private dialog: MatDialog) {
     this.usuarioForm = this.fb.group({
       email: [
         { value: '', disabled: true },
@@ -138,7 +140,7 @@ export class DatosPersonalesComponent {
 
   guardarCambios() {
     if (this.usuarioForm.invalid) {
-      alert('Por favor, corrige los errores del formulario antes de guardar.');
+      this.mostrarAlerta('Invalido', 'Por favor, corrige los errores del formulario antes de guardar.')
       return;
     }
 
@@ -165,7 +167,7 @@ export class DatosPersonalesComponent {
     
     this.usuarioService.updateUser(cambios, this.userIdNumber).subscribe({
       next: (response) => {
-        alert('Cambios guardados con éxito');
+        this.mostrarAlerta('Éxito', 'Cambios guardados con éxito')
 
         this.modoEdicion = false;
         this.usuarioForm.disable();
@@ -173,7 +175,7 @@ export class DatosPersonalesComponent {
       },
       error: (err) => {
         console.error('Error al guardar los cambios:', err);
-        alert('Error al guardar los cambios. Inténtalo de nuevo.');
+        this.mostrarAlerta('Error', `Error al guardar los cambios: ${err}`)
       },
     });
   }
@@ -186,4 +188,34 @@ export class DatosPersonalesComponent {
   volverAtras() {
     this.router.navigate(['/public/home']);
   }
+
+  /**
+ * Función genérica para mostrar el pop-up de alerta.
+ * @param titulo Título de la ventana modal.
+ * @param mensaje Mensaje principal.
+ * @param mostrarCancelar Define si se muestra el botón Cancelar (opcional, por defecto false).
+ */
+mostrarAlerta(titulo: string, mensaje: string, mostrarCancelar: boolean = false): void {
+  
+  const datosAlerta: any = {
+    titulo: titulo,
+    mensaje: mensaje,
+    mostrarBotonCancelar: mostrarCancelar
+  };
+
+  const dialogRef = this.dialog.open(PopUpComponent, {
+    width: '380px', 
+    data: datosAlerta 
+  });
+
+  dialogRef.afterClosed().subscribe(resultado => {
+    if (resultado) {
+      console.log('El usuario hizo clic en Aceptar.');
+    } else if (resultado === false) {
+      console.log('El usuario hizo clic en Cancelar.');
+    } else {
+      console.log('El diálogo fue cerrado sin seleccionar una acción.');
+    }
+  });
+}
 }
