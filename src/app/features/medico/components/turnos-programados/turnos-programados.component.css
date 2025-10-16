@@ -56,6 +56,10 @@ mat-cell {
   cursor: pointer;
 }
 
+mat-cell:hover {
+  background-color: yellow;
+}
+
 .nota {
     position: fixed;
     top: 20%;
