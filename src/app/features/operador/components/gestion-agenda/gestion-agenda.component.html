@@ -1,1 +1,54 @@
-<p>gestion-agenda works!</p>
+<div class="container">
+  <h1>Gestión de Agenda de Médicos (Operador)</h1>
+
+  <mat-form-field [formGroup]="fechaForm">
+    <mat-label>Seleccionar Fecha</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="fecha">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Buscar médico</mat-label>
+    <input matInput (keyup)="aplicarFiltro($event)" placeholder="Escribe aquí" #input>
+  </mat-form-field>
+
+  <table mat-table [dataSource]="medicosAgendaData" class="mat-elevation-z8">
+    
+    <ng-container matColumnDef="nombre">
+      <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.nombre}} {{element.apellido}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="especialidad">
+      <mat-header-cell *matHeaderCellDef> Especialidad </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.especialidad}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="horario_atencion">
+      <mat-header-cell *matHeaderCellDef> Horario de Atención </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.horario_atencion}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="acciones">
+      <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <button mat-icon-button color="warn" (click)="modificarAgenda(element)" title="Modificar Horario/Turnos">
+            <mat-icon>edit</mat-icon>
+        </button>
+        
+        <button mat-icon-button color="primary" (click)="asignarTurno(element)" title="Asignar Turno">
+            <mat-icon>add_circle</mat-icon>
+        </button>
+        
+        <button mat-icon-button color="primary" (click)="verTurnos(element)" title="Ver Turnos">
+            <mat-icon>visibility</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </table>
+
+</div>

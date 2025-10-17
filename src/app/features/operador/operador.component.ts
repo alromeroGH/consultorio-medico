@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
+
 
 @Component({
-  selector: 'app-operador',
+  selector: 'app-gestion-agenda',
   templateUrl: './operador.component.html',
   styleUrls: ['./operador.component.css']
 })
-export class OperadorComponent {
-
+export class OperadorComponent{
+  
 }
