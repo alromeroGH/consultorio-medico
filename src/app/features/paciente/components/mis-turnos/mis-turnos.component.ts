@@ -50,7 +50,7 @@ export class MisTurnosComponent implements OnInit {
 
   formatearFechaDetallada(fecha: string) {
     const date = new Date(fecha);
-    return this.datePipe.transform(date, 'EEEE d \'de\' MMMM \'de\' yyyy \'a las\' HH:mm \'horas\'');
+    return this.datePipe.transform(date, 'EEEE d \'de\' MMMM \'de\' yyyy ');
   }
   volverAtras() {
     this.router.navigate(['/public/home']);

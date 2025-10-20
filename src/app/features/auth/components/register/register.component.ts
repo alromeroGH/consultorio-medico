@@ -51,14 +51,14 @@ export class RegisterComponent implements OnInit {
 
   nombreFormControl = new FormControl('', [Validators.required, Validators.minLength(3)]);
   apellidoFormControl = new FormControl('', [Validators.required, Validators.minLength(3)]);
-  
-  dniFormControl = new FormControl('', [Validators.required, 
-    Validators.minLength(7), 
+
+  dniFormControl = new FormControl('', [Validators.required,
+    Validators.minLength(7),
     Validators.maxLength(8),
     Validators.pattern('^[0-9]*$')]);
 
-    telefonoFormControl = new FormControl('', [Validators.required, 
-    Validators.minLength(10), 
+    telefonoFormControl = new FormControl('', [Validators.required,
+    Validators.minLength(10),
     Validators.maxLength(12),
     Validators.pattern('^[0-9]*$')]);
 
@@ -73,7 +73,7 @@ export class RegisterComponent implements OnInit {
 
   matcher = new MyErrorStateMatcher();
 
-  
+
 
   constructor(private router: Router,
     private auth: AuthService,
@@ -151,7 +151,11 @@ validarOperador(): void {
   }
 
   volverLogin(): void {
-    this.router.navigate(['/auth/login']);
+    if(this.modoOperador) {
+      this.router.navigate(['/public/home']);
+    } else {
+      this.router.navigate(['/auth/login']);
+    }
   }
 
   getCoberturas(): void {

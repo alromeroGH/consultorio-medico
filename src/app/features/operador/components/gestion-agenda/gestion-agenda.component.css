@@ -1,3 +1,44 @@
-:host {
-  display: block;
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 🛑 SOLUCIÓN: Forzar layout fijo para MatTable */
+.mat-mdc-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* Estilos de las celdas y encabezados */
+.mat-mdc-cell, .mat-mdc-header-cell {
+    padding: 8px 12px;
+    word-wrap: break-word;
+    white-space: normal;
+    vertical-align: top;
+}
+
+/* Definición de anchos para las columnas (Asegura alineación) */
+
+.mat-column-nombre {
+    flex: 0 0 15%;
+    min-width: 150px;
+}
+
+.mat-column-especialidad {
+    flex: 0 0 20%;
+    min-width: 180px;
+}
+
+.mat-column-horario_atencion {
+    /* Muestra el rango de horas: 08:00-16:00 */
+    flex: 0 0 15%;
+    min-width: 130px;
+}
+
+.mat-column-acciones {
+    /* Fijo para los 3 íconos (Lápiz, Añadir, Ojo) */
+    flex: 0 0 150px;
+    width: 150px;
+    text-align: center;
 }
