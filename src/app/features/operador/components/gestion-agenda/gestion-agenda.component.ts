@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {
   FormControl,
   FormGroup,
-  FormGroupDirective,
-  NgForm,
   Validators,
   FormsModule,
   ReactiveFormsModule,
@@ -11,7 +9,7 @@ import {
 import { NgIf, NgFor, CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, ErrorStateMatcher } from '@angular/material/core';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,14 +24,6 @@ import { UsuarioService } from 'src/app/core/services/usuario.service';
 import { EspecialidadService } from 'src/app/core/services/especialidad.service';
 import { AgendaService } from 'src/app/core/services/agenda.service';
 import { PopUpComponent } from 'src/app/shared/components/pop-up/pop-up.component';
-
-/** REUTILIZACIÓN DE CLASE DE ERROR */
-export class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-    const isSubmitted = form && form.submitted;
-    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
-  }
-}
 
 @Component({
   selector: 'app-gestion-agenda',
@@ -53,20 +43,23 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatButtonModule,
     MatTableModule,
     MatDialogModule,
-    MatCardModule
-  ]
+    MatCardModule,
+  ],
 })
 export class GestionAgendaComponent implements OnInit {
+  datosAgendaMedicos = new MatTableDataSource<any>([]);
 
-  medicosAgendaData = new MatTableDataSource<any>([]);
-  displayedColumns: string[] = ['nombre', 'especialidad', 'horario_atencion', 'acciones'];
+  columnasMostradas: string[] = [
+    'nombre',
+    'especialidad',
+    'horario_atencion',
+    'acciones',
+  ];
 
-  agendaForm: FormGroup;
-  dateFormControl = new FormControl('', [Validators.required]);
-  timeStarFormControl = new FormControl('', [Validators.required]);
-  timeEndFormControl = new FormControl('', [Validators.required]);
-
-  matcher = new MyErrorStateMatcher();
+  formularioAgenda: FormGroup;
+  controlFecha = new FormControl('', [Validators.required]);
+  controlHoraEntrada = new FormControl('', [Validators.required]);
+  controlHoraSalida = new FormControl('', [Validators.required]);
 
   fechaSeleccionada: string;
 
@@ -74,93 +67,125 @@ export class GestionAgendaComponent implements OnInit {
   agendaEnEdicion: any = null;
 
   constructor(
-    private usuarioService: UsuarioService,
-    private especialidadService: EspecialidadService,
-    private agendaService: AgendaService,
-    private router: Router,
-    private dialog: MatDialog
+    private servicioUsuario: UsuarioService,
+    private servicioEspecialidad: EspecialidadService,
+    private servicioAgenda: AgendaService,
+    private enrutador: Router,
+    private dialogo: MatDialog
   ) {
     this.fechaSeleccionada = new Date().toISOString().split('T')[0];
 
-    this.agendaForm = new FormGroup({
-        fecha: this.dateFormControl,
-        hora_entrada: this.timeStarFormControl,
-        hora_salida: this.timeEndFormControl
+    this.formularioAgenda = new FormGroup({
+      fecha: this.controlFecha,
+      hora_entrada: this.controlHoraEntrada,
+      hora_salida: this.controlHoraSalida,
     });
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.cargarAgendaMedicos();
-    this.dateFormControl.valueChanges.subscribe((newDate) => {
-      this.fechaSeleccionada = newDate ? new Date(newDate).toISOString().split('T')[0] : '';
+
+    this.controlFecha.valueChanges.subscribe((nuevaFecha) => {
+      this.fechaSeleccionada = nuevaFecha
+        ? new Date(nuevaFecha).toISOString().split('T')[0]
+        : '';
       this.cargarAgendaMedicos();
     });
 
-    this.agendaForm.reset({
-        fecha: this.fechaSeleccionada
-    }, { emitEvent: false });
+    this.formularioAgenda.reset(
+      {
+        fecha: this.fechaSeleccionada,
+      },
+      { emitEvent: false }
+    );
   }
 
-  cargarAgendaMedicos(): void {
-    this.usuarioService.getUsers().subscribe({
-      next: (usersResponse: any) => {
-        const medicos = (usersResponse.payload || []).filter((user: any) => user.rol === 'medico');
+  cargarAgendaMedicos() {
+    this.servicioUsuario.getUsers().subscribe({
+      next: (respuestaUsuarios: any) => {
+        const medicos = (respuestaUsuarios.payload || []).filter(
+          (usuario: any) => usuario.rol === 'medico'
+        );
 
-        const medicoObservables: Observable<any>[] = medicos.map((medico: any) => {
+        const observablesMedicos: Observable<any>[] = medicos.map(
+          (medico: any) => {
+            const obsEspecialidad$ = this.servicioEspecialidad
+              .obtenerEspecialidadesMedico(medico.id)
+              .pipe(
+                map((res: any) =>
+                  res.payload && res.payload.length > 0
+                    ? res.payload[0].descripcion
+                    : 'No Asignada'
+                ),
+                catchError(() => of('No Asignada'))
+              );
 
-          const especialidad$ = this.especialidadService.obtenerEspecialidadesMedico(medico.id).pipe(
-            map((res: any) => (res.payload && res.payload.length > 0) ? res.payload[0].descripcion : 'No Asignada'),
-            catchError(() => of('No Asignada'))
-          );
+            const obsAgenda$ = this.servicioAgenda.obtenerAgenda(medico.id).pipe(
+              map((res: any) => {
+                const agendas = res.payload || [];
+                const agendaDelDia = agendas.find(
+                  (a: any) =>
+                    new Date(a.fecha).toISOString().split('T')[0] ===
+                    this.fechaSeleccionada
+                );
+                return {
+                  horario: agendaDelDia
+                    ? `${agendaDelDia.hora_entrada} - ${agendaDelDia.hora_salida}`
+                    : 'No disponible',
+                  agenda_id: agendaDelDia ? agendaDelDia.id : null,
+                  hora_entrada_actual: agendaDelDia
+                    ? agendaDelDia.hora_entrada
+                    : '',
+                  hora_salida_actual: agendaDelDia
+                    ? agendaDelDia.hora_salida
+                    : '',
+                  id_especialidad: agendaDelDia
+                    ? agendaDelDia.id_especialidad
+                    : null,
+                };
+              }),
+              catchError(() => of({ horario: 'Error', agenda_id: null }))
+            );
 
-          const agenda$ = this.agendaService.obtenerAgenda(medico.id).pipe(
-            map((res: any) => {
-              const agendas = res.payload || [];
-              const agendaDelDia = agendas.find((a: any) => new Date(a.fecha).toISOString().split('T')[0] === this.fechaSeleccionada);
-              return {
-                horario: agendaDelDia ? `${agendaDelDia.hora_entrada} - ${agendaDelDia.hora_salida}` : 'No disponible',
-                agenda_id: agendaDelDia ? agendaDelDia.id : null,
-                hora_entrada_actual: agendaDelDia ? agendaDelDia.hora_entrada : '',
-                hora_salida_actual: agendaDelDia ? agendaDelDia.hora_salida : '',
-                id_especialidad: agendaDelDia ? agendaDelDia.id_especialidad : null,
-              };
-            }),
-            catchError(() => of({ horario: 'Error', agenda_id: null }))
-          );
+            return forkJoin({
+              especialidad: obsEspecialidad$,
+              agenda: obsAgenda$,
+            }).pipe(
+              map((resultados: any) => ({
+                id_medico: medico.id,
+                nombre: medico.nombre,
+                apellido: medico.apellido,
+                especialidad: resultados.especialidad,
+                horario_atencion: resultados.agenda.horario,
+                agenda_id: resultados.agenda.agenda_id,
+                hora_entrada_actual: resultados.agenda.hora_entrada_actual,
+                hora_salida_actual: resultados.agenda.hora_salida_actual,
+                id_especialidad: resultados.agenda.id_especialidad,
+              }))
+            );
+          }
+        );
 
-          return forkJoin({ especialidad: especialidad$, agenda: agenda$ }).pipe(
-            map((results: any) => ({
-              id_medico: medico.id,
-              nombre: medico.nombre,
-              apellido: medico.apellido,
-              especialidad: results.especialidad,
-              horario_atencion: results.agenda.horario,
-              agenda_id: results.agenda.agenda_id,
-              hora_entrada_actual: results.agenda.hora_entrada_actual,
-              hora_salida_actual: results.agenda.hora_salida_actual,
-              id_especialidad: results.agenda.id_especialidad,
-            }))
-          );
-        });
-
-        if (medicoObservables.length > 0) {
-          forkJoin(medicoObservables).subscribe({
+        if (observablesMedicos.length > 0) {
+          forkJoin(observablesMedicos).subscribe({
             next: (medicosConAgenda: any[]) => {
-              this.medicosAgendaData.data = medicosConAgenda;
+              this.datosAgendaMedicos.data = medicosConAgenda;
             },
-            error: (err) => console.error('Error al combinar datos de médicos:', err)
+            error: (error) =>
+              console.error('Error al combinar datos de médicos:', error),
           });
         } else {
-          this.medicosAgendaData.data = [];
+          this.datosAgendaMedicos.data = [];
         }
       },
-      error: (err) => console.error('Error cargando lista de usuarios:', err)
+      error: (error) =>
+        console.error('Error cargando lista de usuarios:', error),
     });
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.medicosAgendaData.filter = filterValue.trim().toLowerCase();
+  aplicarFiltro(evento: Event) {
+    const valorFiltro = (evento.target as HTMLInputElement).value;
+    this.datosAgendaMedicos.filter = valorFiltro.trim().toLowerCase();
   }
 
   modificarAgenda(medico: any): void {
@@ -175,75 +200,93 @@ export class GestionAgendaComponent implements OnInit {
     this.agendaEnEdicion = medico;
     this.modoEdicion = true;
 
-    const fechaActual = new Date(this.fechaSeleccionada);
+    const [hora_entrada, hora_salida] = medico.horario_atencion.split(' - ');
 
-    const hora_entrada = medico.horario_atencion.split(' - ')[0] || medico.hora_entrada_actual;
-    const hora_salida = medico.horario_atencion.split(' - ')[1] || medico.hora_salida_actual;
-
-    this.agendaForm.patchValue({
-        fecha: fechaActual,
-        hora_entrada: hora_entrada,
-        hora_salida: hora_salida
-    }, { emitEvent: false });
+    this.formularioAgenda.patchValue(
+      {
+        fecha: new Date(this.fechaSeleccionada),
+        hora_entrada: hora_entrada || medico.hora_entrada_actual,
+        hora_salida: hora_salida || medico.hora_salida_actual,
+      },
+      { emitEvent: false }
+    );
   }
 
   guardarAgenda(): void {
-    if (!this.agendaEnEdicion || !this.agendaForm.valid) {
-      this.mostrarAlerta('Error de Validación', 'Por favor, complete todos los campos de horario correctamente.');
+    if (!this.agendaEnEdicion || !this.formularioAgenda.valid) {
+      this.mostrarAlerta(
+        'Error de Validación',
+        'Por favor, complete todos los campos de horario correctamente.'
+      );
       return;
     }
 
-    const formValues = this.agendaForm.getRawValue();
-    const agendaId = this.agendaEnEdicion.agenda_id;
+    const valoresFormulario = this.formularioAgenda.getRawValue();
+    const idAgenda = this.agendaEnEdicion.agenda_id;
 
-    if (typeof agendaId !== 'number' || agendaId <= 0 || isNaN(agendaId)) {
-        this.mostrarAlerta('Error', 'ID de Agenda inválido. La edición solo aplica a agendas existentes.');
-        return;
+    if (typeof idAgenda !== 'number' || idAgenda <= 0 || isNaN(idAgenda)) {
+      this.mostrarAlerta(
+        'Error',
+        'ID de Agenda inválido. La edición solo aplica a agendas existentes.'
+      );
+      return;
     }
 
-    const updatedAgenda: any = {
-        id_medico: this.agendaEnEdicion.id_medico,
-        id_especialidad: this.agendaEnEdicion.id_especialidad,
-        hora_entrada: formValues.hora_entrada,
-        hora_salida: formValues.hora_salida,
-        fecha: new Date(formValues.fecha).toISOString().split('T')[0]
+    const agendaActualizada: any = {
+      id_medico: this.agendaEnEdicion.id_medico,
+      id_especialidad: this.agendaEnEdicion.id_especialidad,
+      hora_entrada: valoresFormulario.hora_entrada,
+      hora_salida: valoresFormulario.hora_salida,
+      fecha: new Date(valoresFormulario.fecha).toISOString().split('T')[0],
     };
 
-    if (!updatedAgenda.hora_entrada || !updatedAgenda.hora_salida) {
-        this.mostrarAlerta('Error', 'Las horas de entrada y salida no pueden estar vacías.');
-        return;
+    if (!agendaActualizada.hora_entrada || !agendaActualizada.hora_salida) {
+      this.mostrarAlerta(
+        'Error',
+        'Las horas de entrada y salida no pueden estar vacías.'
+      );
+      return;
     }
 
-    this.agendaService.modificarAgenda(updatedAgenda, agendaId).subscribe({
-        next: (response: any) => {
-            this.mostrarAlerta('Éxito', `Horario del Dr. ${this.agendaEnEdicion.apellido} actualizado correctamente.`);
-            this.cancelarEdicion();
-            window.location.reload();
-            this.cargarAgendaMedicos();
-        },
-        error: (err) => {
-            this.mostrarAlerta('Error', 'No se pudo actualizar la agenda. Revise si el ID de especialidad es válido.');
-            console.error('Error al guardar agenda:', err);
-        }
+    this.servicioAgenda.modificarAgenda(agendaActualizada, idAgenda).subscribe({
+      next: (respuesta: any) => {
+        this.mostrarAlerta(
+          'Éxito',
+          `Horario del Dr. ${this.agendaEnEdicion.apellido} actualizado correctamente.`
+        );
+        this.cancelarEdicion();
+        this.cargarAgendaMedicos();
+      },
+      error: (error) => {
+        this.mostrarAlerta(
+          'Error',
+          'No se pudo actualizar la agenda. Revise los datos e intente de nuevo.'
+        );
+        console.error('Error al guardar agenda:', error);
+      },
     });
   }
+
   cancelarEdicion(): void {
     this.modoEdicion = false;
     this.agendaEnEdicion = null;
 
-    this.agendaForm.reset({
-        fecha: this.fechaSeleccionada
-    }, { emitEvent: false });
+    this.formularioAgenda.reset(
+      {
+        fecha: this.fechaSeleccionada,
+      },
+      { emitEvent: false }
+    );
   }
 
   mostrarAlerta(titulo: string, mensaje: string): void {
-    this.dialog.open(PopUpComponent, {
+    this.dialogo.open(PopUpComponent, {
       width: '380px',
-      data: { titulo: titulo, mensaje: mensaje, mostrarBotonCancelar: false }
+      data: { titulo: titulo, mensaje: mensaje, mostrarBotonCancelar: false },
     });
   }
 
   volverAtras() {
-    this.router.navigate(['/public/home']);
+    this.enrutador.navigate(['/public/home']);
   }
 }

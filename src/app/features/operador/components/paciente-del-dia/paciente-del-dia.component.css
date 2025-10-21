@@ -1,0 +1,74 @@
+.container {
+    min-height: 80vh;
+    max-width: 1200px; 
+    margin: 0 auto;
+    display: block !important;
+    height: auto !important;
+}
+
+h1 {
+    color: var(--color-primary);
+    margin-bottom: 20px;
+    text-align: center;
+}
+.form-filters {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.mat-mdc-table {
+    width: 100%;
+}
+
+.mat-column-hora {
+    flex: 0 0 10%;
+    min-width: 60px;
+}
+.mat-column-nombre_paciente {
+    flex: 0 0 25%;
+    min-width: 150px;
+}
+.mat-column-dni_paciente {
+    flex: 0 0 15%;
+    min-width: 100px;
+}
+.mat-column-nombre_medico {
+    flex: 0 0 20%;
+    min-width: 120px;
+}
+.mat-column-especialidad {
+    flex: 0 0 20%;
+    min-width: 120px;
+}
+.mat-column-nota {
+    flex: 0 0 10%;
+    min-width: 50px;
+    text-align: center;
+}
+
+.nota-ayuda {
+    margin-top: 20px;
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+.nota {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    padding: 25px 40px;
+    max-width: 400px;
+    width: 90%;
+    background-color: #f5f5f5;
+    color: #424242;
+    border: 2px solid var(--color-primary);
+    border-radius: 8px;
+    font-size: 1.1rem;
+    text-align: center;
+    font-weight: 500;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}

@@ -18,7 +18,7 @@ import { UsuarioService } from 'src/app/core/services/usuario.service';
   standalone: true,
   templateUrl: './paciente-del-dia.component.html',
   styleUrls: [
-    '../../../../features/medico/components/turnos-programados/turnos-programados.component.css',
+    './paciente-del-dia.component.css',
   ],
   imports: [
     CommonModule,
@@ -33,19 +33,13 @@ import { UsuarioService } from 'src/app/core/services/usuario.service';
   ],
 })
 export class PacienteDelDiaComponent implements OnInit {
-  // Table configuration
   dataSource = new MatTableDataSource<any>([]);
   displayedColumns = ['hora', 'nombre_paciente', 'dni_paciente', 'nombre_medico', 'especialidad', 'nota'];
-
-  // Control de fecha (Inicializado con la fecha de hoy en formato seguro)
   fechaFormControl = new FormControl<string>(this.formatDateToISO(new Date()));
   medicoIdFiltro: number | null = null; 
-
-  // Note display variables
   verNota = false;
   notaSeleccionada = '';
   
-  // Logged-in user data
   private idUsuarioLogueado: number | null = null; 
   private rolUsuario: string | null = null; 
 
@@ -56,8 +50,7 @@ export class PacienteDelDiaComponent implements OnInit {
     private usuarioService: UsuarioService 
   ) {}
 
-  // HELPER: Ensures YYYY-MM-DD format
-  private formatDateToISO(date: Date | string): string {
+  private formatDateToISO(date: Date | string){
     const d = new Date(date);
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0'); 
@@ -65,22 +58,15 @@ export class PacienteDelDiaComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  ngOnInit(): void {
-    // 1. Get logged user ID and Role
+  ngOnInit() {
     const idString = this.usuarioService.getUserId();
     this.idUsuarioLogueado = idString ? parseInt(idString, 10) : null;
     this.rolUsuario = this.usuarioService.getUserRol(); 
-    
-    // 2. Subscribe to query parameters
     this.route.queryParams.subscribe(params => {
-      
-      // Initialize date securely
       const initialDate = params['fecha'] ? this.formatDateToISO(params['fecha']) : this.fechaFormControl.value!;
       this.fechaFormControl.setValue(initialDate); 
       
       const medicoIdParam = params['medicoId'];
-      
-      // LOGIC: Operator vs Doctor
       if (medicoIdParam) {
           this.medicoIdFiltro = parseInt(medicoIdParam, 10);
       } else if (this.rolUsuario === 'medico') {
@@ -92,7 +78,6 @@ export class PacienteDelDiaComponent implements OnInit {
       this.cargarTurnosDelDia();
     });
 
-    // 3. Handle manual date changes
     this.fechaFormControl.valueChanges.subscribe((value: any) => { 
         if (value instanceof Date) { 
             this.fechaFormControl.setValue(this.formatDateToISO(value), { emitEvent: false });
@@ -101,15 +86,13 @@ export class PacienteDelDiaComponent implements OnInit {
     });
   }
 
-  cargarTurnosDelDia(): void {
+  cargarTurnosDelDia() {
     const fecha = this.fechaFormControl.value;
     
     if (!fecha) {
         this.dataSource.data = [];
         return;
     }
-
-    // Body sent to backend (id_medico will be NULL for the Operator's default view)
     let body: any = { fecha }; 
 
     if (this.medicoIdFiltro !== null) {
@@ -118,8 +101,6 @@ export class PacienteDelDiaComponent implements OnInit {
     
     this.turnosService.obtenerTurnosMedico(body).subscribe({
       next: (response: any) => { 
-        
-        // Ensure payload is an array before processing
         let payload = response.payload || response;
         if (!Array.isArray(payload)) {
              payload = []; 
@@ -127,23 +108,18 @@ export class PacienteDelDiaComponent implements OnInit {
         
         const turnos = payload
           .filter((t: any) => {
-             // ¡CORRECCIÓN FINAL! Eliminamos el filtro de fecha restante
-             // Si el backend envía filas, Angular las procesa.
              return true; 
           })
           .map((t: any) => ({
-            // MAPPING: Ensure field names match the column aliases from the BE SQL
             id: t.id_turno || t.id,
             hora: t.hora,
             nombre_paciente: t.nombre_paciente, 
             dni_paciente: t.dni_paciente || t.dni, 
-            // Cálculo de edad (usando método robusto)
             edad: new Date().getFullYear() - new Date(t.fecha_nacimiento_paciente || t.fecha_nacimiento).getFullYear(), 
             nombre_medico: t.nombre_medico, 
             especialidad: t.especialidad, 
             nota: t.nota,
           }))
-          // Sort by hour
           .sort((a: any, b: any) => a.hora.localeCompare(b.hora));
 
         this.dataSource.data = turnos;
@@ -166,6 +142,6 @@ export class PacienteDelDiaComponent implements OnInit {
   }
 
   volverAtras() {
-    this.router.navigate(['/operador/gestion-agenda']);
+    this.router.navigate(['/public/home']);
   }
 }
