@@ -152,11 +152,10 @@ export class DatosPersonalesComponent {
       dni: this.dniUsuario,
       fecha_nacimiento: this.fechaNacimientoUsuario,
       rol: this.rolUsuario,
-      id_cobertura: this.coberturaUsuario,
 
       email: datosDelFormulario.email,
       telefono: datosDelFormulario.telefono,
-      cobertura: datosDelFormulario.cobertura,
+      id_cobertura: datosDelFormulario.cobertura,
       
       ...(datosDelFormulario.nuevaContraseña && {
         password: datosDelFormulario.nuevaContraseña,
@@ -189,12 +188,6 @@ export class DatosPersonalesComponent {
     this.router.navigate(['/public/home']);
   }
 
-  /**
- * Función genérica para mostrar el pop-up de alerta.
- * @param titulo Título de la ventana modal.
- * @param mensaje Mensaje principal.
- * @param mostrarCancelar Define si se muestra el botón Cancelar (opcional, por defecto false).
- */
 mostrarAlerta(titulo: string, mensaje: string, mostrarCancelar: boolean = false): void {
   
   const datosAlerta: any = {

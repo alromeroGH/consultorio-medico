@@ -21,6 +21,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDividerModule } from '@angular/material/divider';
 import { EspecialidadService } from 'src/app/core/services/especialidad.service';
+import { Router } from '@angular/router';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -90,7 +91,7 @@ export class GestionEspecialidadesComponent implements OnInit {
     
       matcher = new MyErrorStateMatcher();
   
-    constructor(private especialidad: EspecialidadService
+    constructor(private especialidad: EspecialidadService, private router: Router
     ) {
        this.createEspecialidadForm = new FormGroup({
         especialidad: this.especialidadFormControl,
@@ -176,4 +177,8 @@ export class GestionEspecialidadesComponent implements OnInit {
   
       return 0;
     }
+
+    volverAtras() {
+    this.router.navigate(['/public/home']);
+  }
 }

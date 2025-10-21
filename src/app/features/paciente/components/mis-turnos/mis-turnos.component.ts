@@ -34,7 +34,7 @@ export class MisTurnosComponent implements OnInit {
 
   ngOnInit() {
     this.turnos$.subscribe(data => {
-      console.log('✅ Datos de turnos recibidos:', data);
+      console.log('Datos de turnos recibidos:', data);
     });
     console.log(this.turnos$);
     console.log(this.idUsuario);

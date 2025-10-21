@@ -24,6 +24,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { Cobertura } from 'src/app/core/interfaces/cobertura.model';
 import { CoberturasService } from 'src/app/core/services/coberturas.service';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { Router } from '@angular/router';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -138,7 +139,8 @@ export class GestionUsuariosComponent implements OnInit {
 
   constructor(private usuario: UsuarioService,
     private auth: AuthService,
-    private coberturas: CoberturasService
+    private coberturas: CoberturasService,
+    private router: Router
   ) {
      this.createUserForm = new FormGroup({
       apellido: this.apellidoFormControl,
@@ -285,5 +287,9 @@ export class GestionUsuariosComponent implements OnInit {
     });
 
     return 0;
+  }
+
+  volverAtras() {
+    this.router.navigate(['/public/home']);
   }
 }

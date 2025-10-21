@@ -21,6 +21,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDividerModule } from '@angular/material/divider';
 import { CoberturasService } from 'src/app/core/services/coberturas.service';
+import { Router } from '@angular/router';
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -89,7 +90,7 @@ export class GestionCoberturasComponent implements OnInit {
       
         matcher = new MyErrorStateMatcher();
     
-      constructor(private cobertura: CoberturasService
+      constructor(private cobertura: CoberturasService, private router: Router
       ) {
          this.createCoberturaForm = new FormGroup({
           cobertura: this.coberturaFormControl,
@@ -177,4 +178,7 @@ export class GestionCoberturasComponent implements OnInit {
     
         return 0;
       }
+      volverAtras() {
+    this.router.navigate(['/public/home']);
+  }
 }
