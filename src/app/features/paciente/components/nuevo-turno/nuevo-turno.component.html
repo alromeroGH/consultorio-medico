@@ -5,12 +5,24 @@
       >Complete los siguientes datos para agendar su cita.</mat-card-subtitle
     >
     <mat-card-content>
-      <form
-        [formGroup]="form"
-        (ngSubmit)="confirmarTurno()"
-      >
+      <form [formGroup]="form" (ngSubmit)="confirmarTurno()">
+        
+        <!-- NUEVO: Campo de selección de paciente para el operador -->
+        <mat-form-field appearance="outline" *ngIf="isOperatorMode">
+          <mat-label>0. Elija un Paciente *</mat-label>
+          <mat-select formControlName="paciente">
+            <mat-option *ngFor="let pac of pacientes" [value]="pac.id">
+              {{ pac.nombre }} {{ pac.apellido }} (DNI: {{ pac.dni }})
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.get('paciente')?.hasError('required')">
+            El paciente es obligatorio.
+          </mat-error>
+        </mat-form-field>
+        <!-- FIN NUEVO -->
+
         <mat-form-field appearance="outline">
-          <mat-label>1. Elija una Especialidad</mat-label>
+          <mat-label>1. Elija una Especialidad *</mat-label>
           <mat-select formControlName="especialidad">
             <mat-option *ngFor="let esp of especialidades" [value]="esp.id">
               {{ esp.descripcion }}
@@ -19,7 +31,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>2. Elija un Profesional</mat-label>
+          <mat-label>2. Elija un Profesional *</mat-label>
           <mat-select formControlName="profesional">
             <mat-option
               *ngFor="let medico of medicos"
@@ -31,22 +43,26 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>3. Elija una Fecha</mat-label>
+          <mat-label>3. Elija una Fecha *</mat-label>
           <input
             matInput
             [matDatepicker]="picker"
             formControlName="fecha"
             [min]="minDate"
+            [matDatepickerFilter]="soloDiasDisponibles"
           />
           <mat-datepicker-toggle
             matSuffix
             [for]="picker"
           ></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
+          <mat-hint *ngIf="form.get('profesional')?.valid && diasDisponiblesMedico.size === 0">
+            Cargando días disponibles o el médico aún no tiene agenda.
+          </mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>4. Horario</mat-label>
+          <mat-label>4. Horario *</mat-label>
           <mat-select formControlName="hora">
             <mat-option
               *ngFor="let horario of horariosDisponibles"
@@ -55,7 +71,11 @@
               {{ horario.hora }}
             </mat-option>
           </mat-select>
+          <mat-hint *ngIf="form.get('fecha')?.valid && horariosDisponibles.length === 0">
+            No hay horarios disponibles para esta fecha.
+          </mat-hint>
         </mat-form-field>
+        
         <mat-form-field appearance="outline">
           <mat-label>5. Notas para el profesional</mat-label>
           <textarea

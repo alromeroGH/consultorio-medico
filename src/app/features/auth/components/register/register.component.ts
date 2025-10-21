@@ -22,6 +22,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { CoberturasService } from 'src/app/core/services/coberturas.service';
 import { Cobertura } from 'src/app/core/interfaces/cobertura.model';
+import { UsuarioService } from 'src/app/core/services/usuario.service';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -39,6 +40,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   imports: [FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatSelectModule, NgIf, NgFor, MatIconModule, MatDatepickerModule, MatNativeDateModule, MatDividerModule, MatButtonModule]
 })
 export class RegisterComponent implements OnInit {
+  modoOperador: boolean = false;
   registerForm: FormGroup;
   passMatch: boolean = true;
   maxDate: Date = new Date();
@@ -49,14 +51,14 @@ export class RegisterComponent implements OnInit {
 
   nombreFormControl = new FormControl('', [Validators.required, Validators.minLength(3)]);
   apellidoFormControl = new FormControl('', [Validators.required, Validators.minLength(3)]);
-  
-  dniFormControl = new FormControl('', [Validators.required, 
-    Validators.minLength(7), 
+
+  dniFormControl = new FormControl('', [Validators.required,
+    Validators.minLength(7),
     Validators.maxLength(8),
     Validators.pattern('^[0-9]*$')]);
 
-    telefonoFormControl = new FormControl('', [Validators.required, 
-    Validators.minLength(10), 
+    telefonoFormControl = new FormControl('', [Validators.required,
+    Validators.minLength(10),
     Validators.maxLength(12),
     Validators.pattern('^[0-9]*$')]);
 
@@ -71,11 +73,12 @@ export class RegisterComponent implements OnInit {
 
   matcher = new MyErrorStateMatcher();
 
-  
+
 
   constructor(private router: Router,
     private auth: AuthService,
-    private coberturas: CoberturasService) {
+    private coberturas: CoberturasService,
+    private usuarioService: UsuarioService) {
 
       // se hace el form para validar que todos los campos estén bien
     this.registerForm = new FormGroup({
@@ -94,7 +97,14 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCoberturas();
+    this.validarOperador();
   }
+
+validarOperador(): void {
+  if(this.usuarioService.getUserRol() === 'operador') {
+    this.modoOperador = true;
+  }
+}
 
   registrarNuevoUsuario(): void {if (this.passFormControl.value === this.rePassFormControl.value && this.registerForm.valid) {
       const credenciales = this.registerForm.value;
@@ -122,9 +132,14 @@ export class RegisterComponent implements OnInit {
       this.auth.register(body).subscribe({
       next: (data) => {
         console.log(data)
-        alert('Usuario logueado exitosamente');
 
-        this.router.navigate(['/auth/login']);
+        if (this.modoOperador) {
+          alert('Usuario creado exitosamente');
+          this.router.navigate(['/public/home'])
+        } else {
+          alert('Usuario logueado exitosamente');
+          this.router.navigate(['/auth/login']);
+        }
       },
       error: (err) => {
         console.error('Error de registro:', err);
@@ -136,7 +151,11 @@ export class RegisterComponent implements OnInit {
   }
 
   volverLogin(): void {
-    this.router.navigate(['/auth/login']);
+    if(this.modoOperador) {
+      this.router.navigate(['/public/home']);
+    } else {
+      this.router.navigate(['/auth/login']);
+    }
   }
 
   getCoberturas(): void {

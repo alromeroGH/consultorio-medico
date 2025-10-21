@@ -1,6 +1,6 @@
 <div class="container">
   <form class="form" [formGroup]="registerForm">
-  <h1>Registro</h1>
+  <h1>{{ modoOperador ? 'Registrar Usuario' : 'Registro' }}</h1>
 
   <!-- NOMBRE Y APELLIDO -->
   <table class="full-width" cellspacing="0">
@@ -171,7 +171,7 @@
   </mat-form-field>
   
   <div class="form-actions">
-    <button mat-raised-button (click)="registrarNuevoUsuario()">Registrarse</button>
+    <button mat-raised-button (click)="registrarNuevoUsuario()">{{modoOperador ? 'Registrar' : 'Registrarse'}}</button>
 
   <br>
 

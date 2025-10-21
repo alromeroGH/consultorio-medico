@@ -1,7 +1,7 @@
 <div class="home-container">
 
     <ng-container *ngIf="isLoggedIn; else contenidoNoLogueado">
-        
+
         <div class="content-logueado">
             <h2>¡Bienvenido a la Clínica Romellier!</h2>
             <p>¿Que actividad desea realizar?</p>
@@ -12,18 +12,25 @@
             </ng-container>
             <ng-container *ngIf="rolUsuario === 'operador'" >
                 <button mat-raised-button color="primary" routerLink="/operador/gestion-agenda">Gestion de agenda</button>
-                <button mat-raised-button color="primary" routerLink="/operador/nuevo-paciente">Nuevo paciente</button>
+                <button mat-raised-button color="primary" routerLink="/operador/paciente-del-dia">Turnos</button>
+                <button mat-raised-button color="primary" routerLink="/operador/asignar-turno">Asignar turno</button>
+                <button mat-raised-button color="primary" routerLink="/operador/crear-paciente">Crear paciente</button>
             </ng-container>
             <ng-container *ngIf="rolUsuario === 'medico'" >
                 <button mat-raised-button color="primary" routerLink="/medico/gestion-agenda">Gestion de agenda</button>
                 <button mat-raised-button color="primary" routerLink="/medico/turnos-programados">Turnos programados</button>
+            </ng-container>
+            <ng-container *ngIf="rolUsuario === 'admin'" >
+                <button mat-raised-button color="primary" routerLink="/admin/gestion-coberturas">Gestion coberturas</button>
+                <button mat-raised-button color="primary" routerLink="/admin/gestion-especialidades">Gestion especialidades</button>
+                <button mat-raised-button color="primary" routerLink="/admin/gestion-usuarios">Gestion usuario</button>
             </ng-container>
         </div>
 
     </ng-container>
 
     <ng-template #contenidoNoLogueado>
-        
+
         <div class="content-no-logueado">
             <h2>Hola!</h2>
             <p>Para acceder a la información de la Clínica Romellier, debes ingresar a tu cuenta o crear una en caso de que no tengas una.</p>

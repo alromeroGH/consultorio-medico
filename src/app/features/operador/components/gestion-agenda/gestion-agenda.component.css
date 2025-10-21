@@ -1,0 +1,40 @@
+.container {
+    min-height: 80vh;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.mat-mdc-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.mat-mdc-cell, .mat-mdc-header-cell {
+    padding: 8px 12px;
+    word-wrap: break-word;
+    white-space: normal;
+    vertical-align: top;
+}
+
+
+.mat-column-nombre {
+    flex: 0 0 15%;
+    min-width: 150px;
+}
+
+.mat-column-especialidad {
+    flex: 0 0 20%;
+    min-width: 180px;
+}
+
+.mat-column-horario_atencion {
+    flex: 0 0 15%;
+    min-width: 130px;
+}
+
+.mat-column-acciones {
+    flex: 0 0 150px;
+    width: 150px;
+    text-align: center;
+}

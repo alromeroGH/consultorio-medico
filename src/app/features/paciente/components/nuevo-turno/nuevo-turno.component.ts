@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -33,16 +33,24 @@ import { PopUpComponent } from 'src/app/shared/components/pop-up/pop-up.componen
     MatCardModule,
   ],
 })
-export class NuevoTurnoComponent {
+export class NuevoTurnoComponent implements OnInit { 
   public especialidades: any[] = [];
   public medicos: any[] = [];
+  public pacientes: any[] = []; 
+  public isOperatorMode: boolean = this.usuarioService.getUserRol() === 'operador'; 
   public horariosDisponibles: { hora: string; id_agenda: number }[] = [];
   public cobertura: any | null = null;
   public minDate: Date;
   public coberturaUsuario: number | null = null;
   public userId: number = parseInt(this.usuarioService.getUserId() || '0', 10);
+  public diasDisponiblesMedico: Set<string> = new Set();
+  private pacienteSeleccionadoId: number | null = null;
 
   form = this.fb.group({
+    paciente: [
+      { value: null as number | null, disabled: !this.isOperatorMode },
+      this.isOperatorMode ? Validators.required : []
+    ],
     especialidad: [null as number | null, Validators.required],
     profesional: [
       { value: null as number | null, disabled: true },
@@ -53,7 +61,7 @@ export class NuevoTurnoComponent {
       Validators.required,
     ],
     hora: [
-      { value: null as string | null, disabled: true },
+      { value: null as { hora: string; id_agenda: number } | null, disabled: true }, 
       Validators.required,
     ],
     notas: [{ value: '', disabled: true }, Validators.required],
@@ -74,45 +82,57 @@ export class NuevoTurnoComponent {
   ngOnInit() {
     this.cargarDatosIniciales();
     this.escucharCambiosDelFormulario();
+    if (!this.isOperatorMode) {
+        this.pacienteSeleccionadoId = this.userId;
+        this.cargarCoberturaPaciente(this.userId);
+    }
   }
 
   private cargarDatosIniciales() {
     this.especialidadService.obtenerEspecialidades().subscribe((res: any) => {
-      console.log('Respuesta completa de especialidades:', res);
-      if (Array.isArray(res)) {
-        this.especialidades = res;
-      } else {
-        this.especialidades = res?.payload || [];
-      }
+      this.especialidades = Array.isArray(res) ? res : res?.payload || [];
     });
-
-    if (this.userId) {
-      console.log('Cargando datos para el usuario con ID:', this.userId);
-      this.usuarioService.getUser(this.userId).subscribe({
+    
+    if (this.isOperatorMode) {
+      this.usuarioService.getUsers().subscribe({ 
         next: (response: any) => {
-          const datosUsuarioArray = response.payload;
-          if (
-            datosUsuarioArray &&
-            Array.isArray(datosUsuarioArray) &&
-            datosUsuarioArray.length > 0
-          ) {
-            const usuario = datosUsuarioArray[0];
-            this.coberturaUsuario = usuario.id_cobertura;
-          } else {
-            this.mostrarAlerta('No encontrado', 'No se encontró el usuario o la estructura de la respuesta es incorrecta.')
-          }
+          this.pacientes = response.payload?.filter((u: any) => u.rol === 'paciente') || [];
+          this.form.get('paciente')?.enable();
         },
         error: (err) => {
-          console.error(
-            'Ocurrió un error al cargar los datos del usuario:',
-            err
-          );
+          console.error('Error al cargar la lista de pacientes:', err);
+          this.mostrarAlerta('Error', 'Error al cargar la lista de pacientes.');
         },
       });
     }
   }
 
+  private cargarCoberturaPaciente(idPaciente: number | null) {
+      if (!idPaciente) {
+          this.coberturaUsuario = null;
+          return;
+      }
+      this.usuarioService.getUser(idPaciente).subscribe({
+          next: (response: any) => {
+              const usuario = response.payload?.[0];
+              this.coberturaUsuario = usuario?.id_cobertura || null;
+          },
+          error: (err) => {
+              console.error('Error al cargar la cobertura del paciente:', err);
+              this.coberturaUsuario = null;
+          },
+      });
+  }
+
   private escucharCambiosDelFormulario() {
+    if (this.isOperatorMode) {
+        this.form.get('paciente')?.valueChanges.subscribe((idPaciente) => {
+            this.pacienteSeleccionadoId = idPaciente;
+            this.cargarCoberturaPaciente(idPaciente);
+            this.form.get('especialidad')?.reset();
+        });
+    }
+
     this.form.get('especialidad')?.valueChanges.subscribe((idEspecialidad) => {
       this.form.get('profesional')?.reset();
       this.form.get('profesional')?.disable();
@@ -125,8 +145,11 @@ export class NuevoTurnoComponent {
     this.form.get('profesional')?.valueChanges.subscribe((idMedico) => {
       this.form.get('fecha')?.reset();
       this.form.get('fecha')?.disable();
+      this.diasDisponiblesMedico.clear();
+
       if (idMedico) {
         this.form.get('fecha')?.enable();
+        this.obtenerDiasDisponiblesMedico(idMedico);
       }
     });
 
@@ -136,7 +159,6 @@ export class NuevoTurnoComponent {
       this.horariosDisponibles = [];
       if (fecha) {
         this.cargarHorarios();
-        this.form.get('hora')?.enable();
       }
     });
 
@@ -161,6 +183,24 @@ export class NuevoTurnoComponent {
         }
       });
   }
+
+  private obtenerDiasDisponiblesMedico(medicoId: number) {
+    this.agendaService.obtenerAgenda(medicoId).subscribe((res: any) => {
+      const agendas = Array.isArray(res) ? res : res?.payload || [];
+      this.diasDisponiblesMedico.clear();
+      agendas.forEach((a: any) => {
+        const fecha = new Date(a.fecha).toISOString().split('T')[0];
+        this.diasDisponiblesMedico.add(fecha);
+      });
+    });
+  }
+
+  soloDiasDisponibles = (fecha: Date | null): boolean => {
+    if (!fecha) return false;
+    const fechaISO = fecha.toISOString().split('T')[0];
+    return this.diasDisponiblesMedico.has(fechaISO);
+  };
+
   private cargarHorarios() {
     const medicoId = this.form.get('profesional')?.value;
     const fechaSeleccionada = this.form.get('fecha')?.value;
@@ -193,25 +233,27 @@ export class NuevoTurnoComponent {
 
         if (this.horariosDisponibles.length > 0) {
           this.form.get('hora')?.enable();
+        } else {
+          this.form.get('hora')?.disable();
         }
       });
     }
   }
+
   private generarHorariosEntre(horaInicio: string, horaFin: string) {
     const horarios: string[] = [];
-
     const [hInicio, mInicio] = horaInicio.split(':').map(Number);
     const [hFin, mFin] = horaFin.split(':').map(Number);
 
     let currentH = hInicio;
     let currentM = mInicio;
 
-    while (currentH < hFin || (currentH === hFin && currentM <= mFin)) {
+    while (currentH < hFin || (currentH === hFin && currentM < mFin)) { 
       const horaFormateada = `${this.dosDigitos(currentH)}:${this.dosDigitos(
         currentM
       )}`;
       horarios.push(horaFormateada);
-      currentM += 30;
+      currentM += 30; 
       if (currentM >= 60) {
         currentM -= 60;
         currentH += 1;
@@ -225,33 +267,38 @@ export class NuevoTurnoComponent {
     return num < 10 ? `0${num}` : `${num}`;
   }
 
-  confirmarTurno(){
+  confirmarTurno() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.mostrarAlerta('Advertencia', 'Por favor, complete todos los campos obligatorios.', false);
       return;
+    }
+    
+    if (!this.pacienteSeleccionadoId) {
+         this.mostrarAlerta('Error', 'Debe seleccionar un paciente.', false);
+         return;
     }
 
     const formValue = this.form.getRawValue();
-    const userId = this.usuarioService.getUserId();
     const horaSeleccionada = formValue.hora as any;
+    
     const body = {
-      id_paciente: Number(userId),
-      id_agenda: horaSeleccionada.id_agenda, 
+      id_paciente: Number(this.pacienteSeleccionadoId),
+      id_agenda: horaSeleccionada.id_agenda,
       fecha: new Date(formValue.fecha!).toISOString().split('T')[0],
       hora: horaSeleccionada.hora,
       nota: formValue.notas || '',
-      id_cobertura: this.coberturaUsuario,
+      id_cobertura: this.coberturaUsuario, 
     };
-
-    console.log('Cuerpo de la solicitud de turno (CORREGIDO):', body);
 
     this.turnosService.asignarTurnoPaciente(body).subscribe({
       next: () => {
-        this.mostrarAlerta('Exito', 'Turno confirmado exitosamente.')
+        this.mostrarAlerta('Éxito', 'Turno confirmado exitosamente.');
         this.router.navigate(['/public/home']);
       },
       error: (err) => {
-        this.mostrarAlerta('Error', `Error al confirmar el turno: ${err}`)
+        const errorMsg = err.error?.message || `Error al confirmar el turno: ${err.message || 'Error desconocido'}`;
+        this.mostrarAlerta('Error', errorMsg);
       },
     });
   }
@@ -260,33 +307,20 @@ export class NuevoTurnoComponent {
     this.router.navigate(['/public/home']);
   }
 
-    /**
-   * Función genérica para mostrar el pop-up de alerta.
-   * @param titulo Título de la ventana modal.
-   * @param mensaje Mensaje principal.
-   * @param mostrarCancelar Define si se muestra el botón Cancelar (opcional, por defecto false).
-   */
-  mostrarAlerta(titulo: string, mensaje: string, mostrarCancelar: boolean = false): void {
-    
+  mostrarAlerta(
+    titulo: string,
+    mensaje: string,
+    mostrarCancelar: boolean = false
+  ) {
     const datosAlerta: any = {
       titulo: titulo,
       mensaje: mensaje,
-      mostrarBotonCancelar: mostrarCancelar
+      mostrarBotonCancelar: mostrarCancelar,
     };
-  
+
     const dialogRef = this.dialog.open(PopUpComponent, {
-      width: '380px', 
-      data: datosAlerta 
-    });
-  
-    dialogRef.afterClosed().subscribe(resultado => {
-      if (resultado) {
-        console.log('El usuario hizo clic en Aceptar.');
-      } else if (resultado === false) {
-        console.log('El usuario hizo clic en Cancelar.');
-      } else {
-        console.log('El diálogo fue cerrado sin seleccionar una acción.');
-      }
+      width: '380px',
+      data: datosAlerta,
     });
   }
 }

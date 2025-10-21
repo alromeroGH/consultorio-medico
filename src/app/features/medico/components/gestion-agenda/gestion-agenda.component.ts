@@ -23,6 +23,7 @@ import { EspecialidadService } from 'src/app/core/services/especialidad.service'
 import { AgendaService } from 'src/app/core/services/agenda.service';
 import { firstValueFrom } from 'rxjs';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -67,7 +68,8 @@ export class GestionAgendaComponent implements OnInit {
 
     constructor(private usuario: UsuarioService,
       private especialidad: EspecialidadService,
-      private agenda: AgendaService
+      private agenda: AgendaService,
+      private router : Router
     ) {
     
         // se hace el form para validar que todos los campos estén bien
@@ -205,4 +207,7 @@ export class GestionAgendaComponent implements OnInit {
       
       this.dataSource.filter = filterValue.trim().toLowerCase();
     }
+    volverAtras() {
+    this.router.navigate(['/public/home']);
+  }
 }
